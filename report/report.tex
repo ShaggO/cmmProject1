@@ -33,12 +33,28 @@ Project specific learning goals:
 \subsection{Problem Statement}
 
 \subsection{Motivation}
+When running a simulation of large hyperelastic materials we wish to make
+large enough steps for the simulation to be performed within a reasonable
+timeframe, but we still want the simulation to be accurate and to avoid
+the mesh from curling up or exploding due to too large determinants of the
+moving mesh vertices. In some hyperelastic materials most of the
+discretized points are able to be simulated using larger timesteps whereas
+smaller areas might need smaller timesteps. These situations are the ones
+we wish to accomodate in this paper.
 
 \subsection{Proposed solution}
+We wish to develop a method for locally adapting the timestep size in
+order to avoid curl ups/explosions while still maintaining the original
+timestep size of the rest of the simulation. In other words for each of
+the original timesteps we perform further simulations of problematic local
+areas of the grid with smaller timesteps.
 
 \subsection{Success criteria}
+Avoid curl ups/explosions of the grid while maintaining the original
+stepsize by using local subsimulations (with smaller stepsizes)
 
 \subsection{Risk assessment}
+Low. The technique has been performed before in various shapes and it
+should therefore be do-able.
 
 \end{document}
-
