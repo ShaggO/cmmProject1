@@ -1,0 +1,67 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\usepackage{amsmath,amssymb,amsfonts}
+
+\title{Project Contract\\Local Adaptive Optimization of Timestep}
+\author{Malte Stær Nissen\\University of Copenhagen\\\texttt{malte.nissen@gmail.com}\\Supervisor: Sune Darkner\\\texttt{darkner@diku.dk}}
+
+\begin{document}
+\maketitle
+
+\section{Learning Goals}
+Course specific learning goals:
+\begin{enumerate}
+	\item Formulate an operational project plan.
+	\item Search the relevant literature and write a literature review setting own work in perspective.
+	\item Be able to formulate what plagiarism is, and demonstrate proper citation and reference style.
+	\item Solve a selected problem of fair Computational and Mathematical Modelling / eScience content and difficulty.
+	\item Produce a thorough experiment plan that clearly demonstrates the quality of and highlights boundaries for the solution. 
+	\item Produce a scientific text of fair quality both textually and scientifically.
+	\item The student must be able to make an oral presentation of own work.
+\end{enumerate}
+Project specific learning goals:
+\begin{enumerate}
+    \item Implement local adaptive optimization of timesteps (LAOT)
+	\item Evaluate LAOT to minimize the risk of unwanted deformations in grids.
+    \item Discuss how LAOT is performed in practice using existing 2nd order optimization methods.
+    \item Study of convergence on implemented methods.
+\end{enumerate}
+
+\section{Problem Description}
+
+\subsection{Problem Statement}
+Study the application of locally adaptive timestepping in simulation of hyperelastic materials.
+
+\subsection{Motivation}
+When running a simulation of large hyperelastic materials we wish to make
+large enough steps for the simulation to be performed within a reasonable
+timeframe, but we still want the simulation to be accurate and to avoid
+the mesh from curling up or exploding due to too large determinants of the
+moving mesh vertices. In some hyperelastic materials most of the
+discretized points are able to be simulated using larger timesteps whereas
+smaller areas might need smaller timesteps. These situations are the ones
+we wish to accomodate in this paper.
+
+\subsection{Proposed solution}
+We wish to develop a method for locally adapting the timestep size in
+order to avoid curl ups/explosions while still maintaining the original
+timestep size of the rest of the simulation. In other words for each of
+the original timesteps we perform further simulations of problematic local
+areas of the grid with smaller timesteps.
+
+\subsection{Success criteria}
+To gain insight into the application of LAOT.
+
+\subsection{Risk assessment}
+Low to none. The technique has been performed before in various shapes and it
+should therefore be do-able.
+
+\cite{Keshav:2007}
+\bibliography{bibliography}
+\bibliographystyle{plain}
+
+\end{document}
