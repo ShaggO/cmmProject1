@@ -4,3 +4,8 @@
 *.fdb_latexmk
 *.aux
 *.synctex.gz
+*.blg
+*.bbl
+*.lof
+*.lot
+*.toc

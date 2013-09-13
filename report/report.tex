@@ -3,61 +3,88 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
+\usepackage{todonotes}
 
 \usepackage{amsmath,amssymb,amsfonts}
 
-\title{Project Contract\\Local Adaptive Optimization of Timestep}
-\author{Malte Stær Nissen\\University of Copenhagen\\\texttt{malte.nissen@gmail.com}\\Supervisor: Sune Darkner\\\texttt{darkner@diku.dk}}
+\title{Local Adaptive Optimization of Timestep}
+\author{Malte Stær Nissen\\University of Copenhagen\\\texttt{malte.nissen@gmail.com} \and Supervisor: Sune Darkner\\University of Copenhagen\\\texttt{darkner@diku.dk}}
 
 \begin{document}
 \maketitle
 
-\section{Learning Goals}
-Course specific learning goals:
-\begin{enumerate}
-	\item Formulate an operational project plan.
-	\item Search the relevant literature and write a literature review setting own work in perspective.
-	\item Be able to formulate what plagiarism is, and demonstrate proper citation and reference style.
-	\item Solve a selected problem of fair Computational and Mathematical Modelling / eScience content and difficulty.
-	\item Produce a thorough experiment plan that clearly demonstrates the quality of and highlights boundaries for the solution. 
-	\item Produce a scientific text of fair quality both textually and scientifically.
-	\item The student must be able to make an oral presentation of own work.
-\end{enumerate}
-Project specific learning goals:
-\begin{enumerate}
-    \item Implement local adaptive optimization of timesteps (LAOT)
-	\item Evaluate LAOT to minimize the risk of unwanted deformations in grids.
-    \item Discuss how LAOT is performed in practice using existing 2nd order optimization methods.
-    \item Study of convergence on implemented methods.
-\end{enumerate}
+\tableofcontents
 
-\section{Problem Description}
+\clearpage
 
-\subsection{Problem Statement}
-Study the application of locally adaptive timestepping in simulation of hyperelastic materials.
+\section{Introduction}
+Simulations of large (order of millions of vertices) hyperelastic materials are
+very time consuming. When working with materials of varying density of vertices,
+the highest densities often make the most strict bounds on size of the timestep
+of the simulation in order to keep the materials (and grids) stable. In a
+``standard'' simulation with a global timestep size we need to compute possibly
+unneccessarily many computations on the coarser parts of the material caused by this bound. When
+furthermore having materials with a large amount of somewhat equally distributed
+vertices and smaller patches of detailed areas with higher density of vertices,
+it would be an advantage to be able to perform large timesteps for the majority of
+the material and smaller steps for the local patches when vertices cause
+instability. We call this concept local adaptive optimization of timestep, which
+we will study further in this report.
 
-\subsection{Motivation}
-When running a simulation of large hyperelastic materials we wish to make
-large enough steps for the simulation to be performed within a reasonable
-timeframe, but we still want the simulation to be accurate and to avoid
-the mesh from curling up or exploding due to too large determinants of the
-moving mesh vertices. In some hyperelastic materials most of the
-discretized points are able to be simulated using larger timesteps whereas
-smaller areas might need smaller timesteps. These situations are the ones
-we wish to accomodate in this paper.
+\section{Previous work}
+As according to \cite{Gander:2013} local time stepping was first studiet
+in the community of ordinary differential equations (ODE) with Rice
+\cite{rice:1960} developing the split Runge-Kutta methods (multirate
+Runge-Kutta methods). The concept behind these methods is the splitting of
+the ODEs into multiple (two components in \cite{rice:1960}) components of
+which each component needs to be integrated in different scales. A strategy
+is chosen as proposed in \cite{Kvaernoe:1999} of either computing the coarser
+part first (``Fastest first strategy'') followed by the finer part or vice
+versa (``Slowest first strategy''). In order to perform these sequential
+computations either interpolation or extrapolation of the first computation
+is performed to compute the second part in each time step and the different
+time step sizes can be adapted to fit the model in each step as well. See
+\cite{Kvaernoe:1999} and \cite{Gear:1984} (similar strategy for linear
+multistep methods) for more detailed descriptions of the two strategies.
 
-\subsection{Proposed solution}
-We wish to develop a method for locally adapting the timestep size in
-order to avoid curl ups/explosions while still maintaining the original
-timestep size of the rest of the simulation. In other words for each of
-the original timesteps we perform further simulations of problematic local
-areas of the grid with smaller timesteps.
+In the partial differential equations (PDE) community, the adaptive
+timestepping area was explored and developed with the goal of simulating
+very specific known problems such as the (hyperbolic) wave equations
+and (parabolic) heat equations instead of more general applications. We
+will adhere from describing the methods further in this report, but a
+short description and comparison of the specific methods can be found in
+\cite{Gander:2013}. Generally the methods developed at first all make use
+of the same basic concepts for making the local adaptive timestepping:
+Interpolation, extrapolation, prediction and correction, which we are going to
+use in the work of this report as well.
 
-\subsection{Success criteria}
-To gain insight into the application of LAOT.
+Recently newer and faster methods with local time stepping have been
+developed on the basis of nonlinear PDEs and the work performed in this
+field in the 80s and 90s. First the multiresolution (MR) schemes for creating
+space-adaptive discretizations and refinements of these were developed,
+see \cite{Berger:1984}. Then multiple MR based schemes were developed.
+Dominques et al. \cite{Domingues:2008} is one of the more recent of these MR
+schemes. They describe a local scale-dependent time stepping
+for a space-adaptive multiresolution scheme using the finite volume method
+in order to obtain speed-up using larger time-steps without violating a
+defined stability constraints, which is essentially the same motivation as
+this report. The method is based on an explicit Runge-Kutta method of second
+order. As expected the timestep size is imposed by a stability condition of
+the explicit Runge-Kutta on the finest scale, which increases with the scale
+of the mesh and hence we are able to increase the timestep as well without
+violating the stability condition.
 
-\subsection{Risk assessment}
-Low to none. The technique has been performed before in various shapes and it
-should therefore be do-able.
+\section{Method}
+
+\section{Experiments and results}
+
+\section{Discussion}
+
+\section{Conclusion}
+
+
+\cite{Keshav:2007}
+\bibliography{bibliography}
+\bibliographystyle{plain}
 
 \end{document}
