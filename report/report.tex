@@ -7,7 +7,7 @@
 
 \usepackage{amsmath,amssymb,amsfonts}
 
-\title{Local Adaptive Optimization of Timestep}
+\title{Local Adaptive Optimization of Time step}
 \author{Malte Stær Nissen\\University of Copenhagen\\\texttt{malte.nissen@gmail.com} \and Supervisor: Sune Darkner\\University of Copenhagen\\\texttt{darkner@diku.dk}}
 
 \begin{document}
@@ -18,23 +18,24 @@
 \clearpage
 
 \section{Introduction}
-Simulations of large (order of millions of vertices) hyperelastic materials are
-very time consuming. When working with materials of varying density of vertices,
-the highest densities often make the most strict bounds on size of the timestep
-of the simulation in order to keep the materials (and grids) stable. In a
-``standard'' simulation with a global timestep size we need to compute possibly
-unneccessarily many computations on the coarser parts of the material caused by this bound. When
-furthermore having materials with a large amount of somewhat equally distributed
-vertices and smaller patches of detailed areas with higher density of vertices,
-it would be an advantage to be able to perform large timesteps for the majority of
-the material and smaller steps for the local patches when vertices cause
-instability. We call this concept local adaptive optimization of timestep, which
-we will study further in this report.
+Simulations of large (order of millions of vertices) hyper elastic materials
+are very time consuming. When working with materials of varying density of
+vertices, the highest densities often make the most strict bounds on size of
+the time step of the simulation in order to keep the materials (and grids)
+stable. In a ``standard'' simulation with a global time step size we need
+to compute possibly unnecessarily many computations on the coarser parts of
+the material caused by this bound. When furthermore having materials with a
+large amount of somewhat equally distributed vertices and smaller patches of
+detailed areas with higher density of vertices, it would be an advantage to be
+able to perform large time steps for the majority of the material and smaller
+steps for the local patches when vertices cause instability. We call this
+concept local adaptive optimization of time step, which we will study further
+in this report.
 
 \section{Previous work}
-As according to \cite{Gander:2013} local time stepping was first studiet
+As according to \cite{Gander:2013} local time stepping was first studied
 in the community of ordinary differential equations (ODE) with Rice
-\cite{rice:1960} developing the split Runge-Kutta methods (multirate
+\cite{rice:1960} developing the split Runge-Kutta methods (multi rate
 Runge-Kutta methods). The concept behind these methods is the splitting of
 the ODEs into multiple (two components in \cite{rice:1960}) components of
 which each component needs to be integrated in different scales. A strategy
@@ -44,35 +45,34 @@ versa (``Slowest first strategy''). In order to perform these sequential
 computations either interpolation or extrapolation of the first computation
 is performed to compute the second part in each time step and the different
 time step sizes can be adapted to fit the model in each step as well. See
-\cite{Kvaernoe:1999} and \cite{Gear:1984} (similar strategy for linear
-multistep methods) for more detailed descriptions of the two strategies.
+\cite{Kvaernoe:1999} and \cite{Gear:1984} (similar strategy for linear multi
+step methods) for more detailed descriptions of the two strategies.
 
-In the partial differential equations (PDE) community, the adaptive
-timestepping area was explored and developed with the goal of simulating
+In the partial differential equations (PDE) community, the adaptive time
+stepping area was explored and developed with the goal of simulating
 very specific known problems such as the (hyperbolic) wave equations
 and (parabolic) heat equations instead of more general applications. We
 will adhere from describing the methods further in this report, but a
 short description and comparison of the specific methods can be found in
 \cite{Gander:2013}. Generally the methods developed at first all make use
-of the same basic concepts for making the local adaptive timestepping:
+of the same basic concepts for making the local adaptive time stepping:
 Interpolation, extrapolation, prediction and correction, which we are going to
 use in the work of this report as well.
 
-Recently newer and faster methods with local time stepping have been
-developed on the basis of nonlinear PDEs and the work performed in this
-field in the 80s and 90s. First the multiresolution (MR) schemes for creating
-space-adaptive discretizations and refinements of these were developed,
-see \cite{Berger:1984}. Then multiple MR based schemes were developed.
-Dominques et al. \cite{Domingues:2008} is one of the more recent of these MR
-schemes. They describe a local scale-dependent time stepping
-for a space-adaptive multiresolution scheme using the finite volume method
-in order to obtain speed-up using larger time-steps without violating a
-defined stability constraints, which is essentially the same motivation as
-this report. The method is based on an explicit Runge-Kutta method of second
-order. As expected the timestep size is imposed by a stability condition of
-the explicit Runge-Kutta on the finest scale, which increases with the scale
-of the mesh and hence we are able to increase the timestep as well without
-violating the stability condition.
+Recently newer and faster methods with local time stepping have been developed
+on the basis of nonlinear PDEs and the work performed in this field in
+the 80s and 90s. First the multi resolution (MR) schemes for creating
+space-adaptive discretizations and refinements of these were developed, see
+\cite{Berger:1984}. Then multiple MR based schemes were developed. Domingues
+et al. \cite{Domingues:2008} is one of the more recent of these MR schemes.
+They describe a local scale-dependent time stepping for a space-adaptive multi
+resolution scheme using the finite volume method in order to obtain speed-up
+using larger time-steps without violating a defined stability constraints,
+which is essentially the same motivation as this report. The method is based
+on an explicit Runge-Kutta method of second order. As expected the time step
+size is imposed by a stability condition of the explicit Runge-Kutta on the
+finest scale, which increases with the scale of the mesh and hence we are able
+to increase the time step as well without violating the stability condition.
 
 \section{Method}
 
