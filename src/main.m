@@ -151,7 +151,7 @@ for step = iters
 %    ylabel('y');
 %    set(fi1, 'PaperPosition', [-0.2 -0.25 6 5.5])
 %    set(fi1, 'PaperSize', [5.4 5.2]);
-%    saveas(fi1,['../images/push_frame_' num2str(step)],'pdf');
+%    saveas(fi1,['images/push_frame_' num2str(step)],'pdf');
 %    end
 end
 
@@ -163,7 +163,7 @@ ylabel('Volume');
 title('Volume');
 set(fi2, 'PaperPosition', [-0.2 -0.25 6 5.5])
 set(fi2, 'PaperSize', [5.4 5.2]);
-saveas(fi2, '../images/push_volume','pdf');
+saveas(fi2, 'images/push_volume','pdf');
 
 fi3 = figure(3);
 plot(1:step,Momentum(1:step));
@@ -172,4 +172,4 @@ xlabel('frame');
 set(fi3, 'PaperPosition', [-0.2 -0.25 6 5.5])
 set(fi3, 'PaperSize', [5.4 5.2]);
 ylabel('Sum of length of velocity');
-saveas(fi3, '../images/push_momentum','pdf');
+saveas(fi3, 'images/push_momentum','pdf');
