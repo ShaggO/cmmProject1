@@ -26,10 +26,10 @@ sp = [sp(1:end-1),sp(2:end)];
 cntS = size(sp,1);
 
 % Set up initial measurements for each spring
-spC = ones(cntS,1) * 0.1;   % Damping
-spK = ones(cntS,1) * 0.7;   % Stiffness
+spC = ones(cntS,1) * 0.01;   % Damping
+spK = ones(cntS,1) * 0.1;   % Stiffness
 spX0 = pP(sp);
-spX0 = abs(spX0(:,1) - spX0(:,2));  % Rest length (x0)
+spX0 = abs(spX0(:,1) - spX0(:,2)) * 0.9;  % Rest length (x0)
 spD = ones(cntS,1) * 0.1;   % Viscous drag
 
 
@@ -43,7 +43,7 @@ momentum_show = false;
 
 t_start = 0;
 t_stop = 100;
-fps_lowest = 30;
+fps_lowest = 10;
 dt_base = 1 / fps_lowest;
 dt = dt_base;
 
@@ -56,10 +56,12 @@ f_ext = 0;
 % Initial time
 time = 0;
 explicit = true;
+h = 1;
 
 
 while time < t_stop
 
+    pF = zeros(cntP,1);
     %% Force calculation
     % Calculate spring lengths
     pP_temp = pP(sp);
@@ -67,23 +69,23 @@ while time < t_stop
     l = abs(pP_temp(:,1) - pP_temp(:,2));   % length l
 
     pV_temp = pV(sp);                       % velocities
-    vx = pV_temp(:,1) - pV_temp(:,2);       % Difference in velocities
+    dv = pV_temp(:,1) - pV_temp(:,2);       % Difference in velocities
 
-    f = -(spC .* vx .* dx ./ l + spK .* (l - spX0) .* dx ./ l) .* dx ./ l;
-    if time == 0
-        f(end) = f(end) + 0;
-    end
-    pFfixed = pF(pFixed);
+    f = spK .* (l - spX0);
+    f = f + spC .* dv .* dx ./ l;
+    f = f .* (-dx ./ l);
+
+%    pFfixed = pF(pFixed);
     pF(sp(:,1)) = pF(sp(:,1)) + f;
     pF(sp(:,2)) = pF(sp(:,2)) - f;
-    pF(pFixed) = pFfixed;
+%    pF(pFixed) = pFfixed;
+%    disp(pF);
 
     % Derivative calculation
-    dp = pV;
     dv = pF ./ pM;
 
     % Position update
-    pP = pP + dp * dt;
+    pP = pP + pV * dt;
     pV = pV + dv * dt;
 %{
     if mod(time, dt_base) == 0
@@ -94,9 +96,13 @@ while time < t_stop
     end
 %}
     figure(1);
-    plot(pP,ones(1,cntP),'xr');
+    plot(pP,zeros(1,cntP),'xr');
+    hold on;
+    plot(pP,pF,'ob');
+%    plot([0 0],[0 sum(pF)]);
     title(['Particles at time ' num2str(time)]);
     drawnow;
+    hold off;
 %    pause(0.01);
     time = time+dt;
 end
