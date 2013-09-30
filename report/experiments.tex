@@ -7,38 +7,72 @@
 
 \usepackage{amsmath,amssymb,amsfonts}
 
-\title{}
+\title{Experimental plan}
 \author{Malte Stær Nissen}
 
 \begin{document}
 \maketitle
 
-Lav 1 dimensionelle problemer først med fjedrer
+The experimental plan is overall split in two parts: 1 dimensional experiments and 2
+dimensional experiments.
 
-Til triangulering:
-qmesh,
-delaunay,
+\subsection{1 dimensional experiments}
+We are working with the problem of simulating a spring mass particle system in 1
+dimension. Our hypothesis is that we are able to apply adaptive timestepping to
+the simulation and thereby decrease the number of computations needed to
+simulate the system.
 
-Store trekanter med små trekanter i midten.
+We first experiment with a uniform 1D mesh where we manually choose different
+timestep sizes to test for possible side-effects in as simple a simulation as
+possible.
 
-Fast forhold mellem tidsskridt til at starte med.
+We then perform the adaptive timestepping on a 1D mesh having coarse and finer
+parts.
 
-Derefter detekt når advektionen går galt.
-Når arealet er lig 0
-Krydsprodukt til udregningerne.
+\subsection{2 dimensional experiments}
 
-$\frac{\alpha t}{2} < \Delta t$
+In 2 dimensions we are working with the problem of simulating hyperelastic
+materials using adaptive timestepping as for the 1 dimensional experiments.
 
-linære beregninger
-
-Samtidig timestepping uden genberegning på store skridt
-
-Forsøg at se hvor meget vi kan presse citronen.
-
-Benyt eget lille framework og modificer det
+We split the 2D experiments in a test on a somewhat uniform 2D mesh having
+manually chosen some triangles to be simumlated with smaller timesteps than
+others. After these experiments we move on to performing 2D experiments on
+space-adaptive meshes having both coarse and fine parts.
 
 
-Evt. benyt lokale timesteps med genberegninger løbende
+\subsection{Comparative experiments}
+
+Finally we are going to compare the performance of the adaptive timestepping
+with regular timestepping schemes in 2 dimensions.
+
+
+
+%Lav 1 dimensionelle problemer først med fjedrer
+%
+%Til triangulering:
+%qmesh,
+%delaunay,
+%
+%Store trekanter med små trekanter i midten.
+%
+%Fast forhold mellem tidsskridt til at starte med.
+%
+%Derefter detekt når advektionen går galt.
+%Når arealet er lig 0
+%Krydsprodukt til udregningerne.
+%
+%$\frac{\alpha t}{2} < \Delta t$
+%
+%linære beregninger
+%
+%Samtidig timestepping uden genberegning på store skridt
+%
+%Forsøg at se hvor meget vi kan presse citronen.
+%
+%Benyt eget lille framework og modificer det
+%
+%
+%Evt. benyt lokale timesteps med genberegninger løbende
 
 
 

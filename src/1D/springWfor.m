@@ -30,7 +30,6 @@ spC = ones(cntS,1) * 0.5;   % Damping
 spK = ones(cntS,1) * 0.5;   % Stiffness
 spX0 = pP(sp);
 spX0 = abs(spX0(:,1) - spX0(:,2)) * 0.8;
-%spX0 = abs(spX0(:,1) - spX0(:,2));  % Rest length (x0)
 spD = ones(cntS,1) * 0.1;   % Viscous drag
 
 
@@ -124,9 +123,8 @@ figure(2);
 plot(times,positions);
 
 figure(3);
-figure('Renderer','OpenGL');
 y_values = zeros(size(positions,1),1);
-plot(positions(:,1),y_values,'x')
+plot(positions(:,1),y_values,'x');
 set(gca,'NextPlot','replaceChildren');
 for i=1:length(times)
     plot(positions(:,i),y_values,'xr');

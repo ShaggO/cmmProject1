@@ -3,7 +3,7 @@ close all;
 
 % Create grid of particles at positions
 pP = [-2:0.5:1.99, 2:0.15:2.99, 3:0.5:6.99]';
-pP = [-2:1:2];
+%pP = [-2:1:2];
 if size(pP,2) > size(pP,1)
     pP = pP';
 end
@@ -12,7 +12,7 @@ cntP = size(pP,1);
 % Set up initial measurements for each particle
 pV = zeros(cntP,1);         % Initial velocities
 pF = zeros(cntP,1);         % Force at time t
-pM = ones(cntP,1) * 500;    % Mass of each particle
+pM = ones(cntP,1) * 30;    % Mass of each particle
 
 % Fix the left-most point
 % Find left side
@@ -26,10 +26,10 @@ sp = [sp(1:end-1),sp(2:end)];
 cntS = size(sp,1);
 
 % Set up initial measurements for each spring
-spC = ones(cntS,1) * 0.01;   % Damping
-spK = ones(cntS,1) * 0.1;   % Stiffness
+spC = ones(cntS,1) * 0.5;   % Damping
+spK = ones(cntS,1) * 0.5;   % Stiffness
 spX0 = pP(sp);
-spX0 = abs(spX0(:,1) - spX0(:,2)) * 0.9;  % Rest length (x0)
+spX0 = abs(spX0(:,1) - spX0(:,2)) * 0.8;  % Rest length (x0)
 spD = ones(cntS,1) * 0.1;   % Viscous drag
 
 
@@ -42,7 +42,7 @@ distance_show = false;
 momentum_show = false;
 
 t_start = 0;
-t_stop = 100;
+t_stop = 500;
 fps_lowest = 10;
 dt_base = 1 / fps_lowest;
 dt = dt_base;
@@ -59,6 +59,10 @@ explicit = true;
 h = 1;
 
 
+positions = [];
+lengths = [];
+times = [];
+dx = zeros(cntS,1);
 while time < t_stop
 
     pF = zeros(cntP,1);
@@ -75,6 +79,10 @@ while time < t_stop
     f = f + spC .* dv .* dx ./ l;
     f = f .* (-dx ./ l);
 
+%    if time == 0
+%        f(end) = 50;
+%    end
+
 %    pFfixed = pF(pFixed);
     pF(sp(:,1)) = pF(sp(:,1)) + f;
     pF(sp(:,2)) = pF(sp(:,2)) - f;
@@ -87,6 +95,12 @@ while time < t_stop
     % Position update
     pP = pP + pV * dt;
     pV = pV + dv * dt;
+    positions(:,end+1) = pP;
+    lengths(:,end+1) = -dx;
+    times(end+1) = time;
+
+    time = time+dt;
+end
 %{
     if mod(time, dt_base) == 0
         % Perform
@@ -95,14 +109,22 @@ while time < t_stop
         disp(['Non-master: ' num2str(time)]);
     end
 %}
-    figure(1);
-    plot(pP,zeros(1,cntP),'xr');
+figure(1);
+plot(times,lengths);
+
+figure(2);
+plot(times,positions);
+
+figure(3);
+y_values = zeros(size(positions,1),1);
+plot(positions(:,1),y_values,'x');
+set(gca,'NextPlot','replaceChildren');
+for i=1:length(times)
+    plot(positions(:,i),y_values,'xr');
     hold on;
-    plot(pP,pF,'ob');
-%    plot([0 0],[0 sum(pF)]);
-    title(['Particles at time ' num2str(time)]);
-    drawnow;
+    title(['Time frame: ' num2str(times(i))]);
     hold off;
-%    pause(0.01);
-    time = time+dt;
+    F(i) = getframe;
 end
+figure(4);
+movie(F,1,fps_lowest);
