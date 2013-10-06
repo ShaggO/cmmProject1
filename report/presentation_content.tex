@@ -1,0 +1,185 @@
+\usepackage{pslatex}
+\usepackage{listing}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{multirow}
+
+\usepackage{etoolbox}% http://ctan.org/pkg/etoolbox
+\AtBeginEnvironment{figure}{\setcounter{subfigure}{0}}% Resets subfigure counter at start of figure environment
+
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
+\tikzset{onslide/.code args={<#1>#2}{%
+  \only<#1>{\pgfkeysalso{#2}} % \pgfkeysalso doesn't change the path
+}}
+
+\usepackage{scalefnt}
+
+\usetheme[unit=ics,dk]{Frederiksberg}
+\useinnertheme{MLHacks}
+
+\AtBeginSection[]
+{
+	\begin{frame}<beamer>
+		\frametitle{Emne}
+		\tableofcontents[currentsection,hideothersubsections]
+		\ghostframe
+	\end{frame}
+}
+
+\title{Local Adaptive Optimization of Time Stepi - Experimental plan}
+\subtitle{CMM Project Course}
+\author{Malte Stær Nissen}
+\institute{Datalogisk Institut}
+\date{\today}
+
+\begin{document}
+
+\tikzstyle{decision} = [diamond, draw, fill=blue!20, 
+    text width=7em, text badly centered, node distance=1.3cm, inner sep=0pt]
+\tikzstyle{block} = [rectangle, draw, fill=gray!20, 
+    text width=12em, text centered, minimum height=3em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{cloud} = [draw, ellipse,fill=red!20, node distance=2.3cm, minimum height=2em]
+
+\frame[plain]{\titlepage}
+
+\begin{frame}{Content}
+	\setbeamercovered{highly dynamic}
+	\begin{center}
+	\tableofcontents[pausesections,hideothersubsections]
+	\end{center}
+\end{frame}
+
+\section{}
+\begin{frame}{Short introduction}
+	\begin{itemize}
+		\item Simulations of materials
+		\item Heavy computations
+        \item Reduce number of calculations
+	\end{itemize}
+\end{frame}
+
+\section{}
+\begin{frame}{Experimental plan overview}
+\end{frame}
+
+\section{Tests og resultater}
+
+\begin{frame}{Eksempel på original maske}
+		\includegraphics[height=7cm]{graphics/sa_breast_pectoral.png}
+\end{frame}
+
+\begin{frame}{Middelværdier for histogrammerne}
+
+	{\scalefont{0.8}
+	\begin{table}
+		\centering
+		\begin{tabular}{l l| l | l | l | l | l |}
+			\cline{2-7}
+			 & \multicolumn{6}{|c|}{Middelværdi} \\ \hline
+			\multicolumn{1}{| l |}{Metode}		& PSE	&	PSP	&	BSE	&	BSP 	&	TSE	& TSP \\ \hline \hline
+			\multicolumn{1}{| l |}{Karssemeijer $M_K$} & 0.8073 & 0.9931 & 0.8940 & 0.9603 & \multirow{2}{*}{0.9235} & \multirow{2}{*}{0.9845} \\ \cline{1-5} 
+			\multicolumn{1}{| l |}{Canny  $M_C$}	& 0.7231 & 0.9982 & 0.9055 & 0.9469 & & \\ \hline
+			\multicolumn{1}{| l |}{Blackbox $M_B$} & 0.7023 & 0.9542 & 0.8300 & 0.9616 & 0.9088 & 0.9745 \\ \hline
+		\end{tabular}
+		\caption{Oversigt over middelværdierne for testparametrene}
+		\label{tbl:test_mean_values}
+	\end{table}
+	}
+\end{frame}
+
+\subsection{Præcisionstests}
+\begin{frame}{Præcision af segmenteringen}
+	\begin{itemize}
+		\item Ens masker giver ens segmenteringspunkter $A$, $B$ og $C$
+		\item Modellering af pektoralmusklen ved lige linje
+		\item Maskerne ``modificeres'' efterfølgende af vores program
+		\item Test på præcisionen af vores segmenteringer ved afvigelse mellem fundne $A_{gt}$, $B_{gt}$ og $C_{gt}$ på ground truth maskerne og $A$, $B$ og $C$ fundet vha. egen implementation
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Histogrammer for præcision på $A$}
+	\begin{figure}
+		\begin{subfigure}{0.32\linewidth}
+			\includegraphics[width=\linewidth,keepaspectratio]{graphics/karssemeijer_a_difference.png}
+			\caption{$M_K, A$}
+		\end{subfigure}
+		\begin{subfigure}{0.32\linewidth}
+			\includegraphics[width=\linewidth,keepaspectratio]{graphics/canny_a_difference.png}
+			\caption{$M_C, A$}
+		\end{subfigure}
+		\begin{subfigure}{0.32\linewidth}
+			\includegraphics[width=\linewidth,keepaspectratio]{graphics/blackbox_a_difference.png}
+			\caption{$M_B, A$}
+		\end{subfigure}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Histogrammer for præcision på $B$ og $C$}
+	\begin{figure}
+		\begin{subfigure}{0.32\linewidth}
+			\includegraphics[width=\linewidth,keepaspectratio]{graphics/karssemeijer_b_difference.png}
+			\caption{$M_K, B$}
+		\end{subfigure}
+		\begin{subfigure}{0.32\linewidth}
+			\includegraphics[width=\linewidth,keepaspectratio]{graphics/canny_b_difference.png}
+			\caption{$M_C, B$}
+		\end{subfigure}
+		\begin{subfigure}{0.32\linewidth}
+			\includegraphics[width=\linewidth,keepaspectratio]{graphics/blackbox_b_difference.png}
+			\caption{$M_B, B$}
+		\end{subfigure}
+		\begin{subfigure}{0.32\linewidth}
+			\includegraphics[width=\linewidth,keepaspectratio]{graphics/karssemeijer_c_difference.png}
+			\caption{$M_K, C$}
+		\end{subfigure}
+		\begin{subfigure}{0.32\linewidth}
+			\includegraphics[width=\linewidth,keepaspectratio]{graphics/canny_c_difference.png}
+			\caption{$M_C, C$}
+		\end{subfigure}
+		\begin{subfigure}{0.32\linewidth}
+			\includegraphics[width=\linewidth,keepaspectratio]{graphics/blackbox_c_difference.png}
+			\caption{$M_B, C$}
+		\end{subfigure}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Middelværdier}
+	\begin{table}
+		\begin{tabular}{l | r | r | r |}
+			\cline{2-4}
+			{} & \multicolumn{3}{| c |}{ Middelværdi } \\ \hline
+			\multicolumn{1}{| l |}{Metode}			&	$A$ (cm)		&	$B$ (cm)		& 	$C$ (cm) \\ \hline \hline
+			\multicolumn{1}{| l |}{Karssemeijer $M_K$}	&	1.7202	&	2.622  	&	3.9531 \\ \hline
+			\multicolumn{1}{| l |}{Canny $M_C$}		&	1.4559	&	2.300  	&	3.3958 \\ \hline
+			\multicolumn{1}{| l |}{Blackbox $M_B$}		&	2.1541	&	3.8948	&	5.1714 \\ \hline
+		\end{tabular}
+		\caption{Middelværdier for afvigelsen på punkterne $A$, $B$ og $C$}
+	\end{table}
+\end{frame}
+\section{Diskussion}
+\subsection{Indre begrænsninger}
+\begin{frame}{Systemernes begrænsninger}
+	\begin{enumerate}
+		\item For små mammografier i forhold til brystet
+		\item Manglende skin-air grænse/brystvæv
+		\item Manglende pektoralmuskel
+	\end{enumerate}
+\end{frame}
+\subsection{Problemer ved overførsel til nyt system}
+\begin{frame}{Problemer ved overførsel til nyt system}
+	\begin{enumerate}
+		\item Projektionsretning (ML, MLO, CC, LM)
+		\item Intensitetsværdier
+		\item Mammografidimensioner
+	\end{enumerate}
+\end{frame}
+
+\begin{frame}{Detaljeret overblik}
+	\input{flowchart/overall_detail}
+\end{frame}
+
+\end{document}
+

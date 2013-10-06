@@ -8,7 +8,10 @@
 \usepackage{amsmath,amssymb,amsfonts}
 
 \title{Local Adaptive Optimization of Time step}
-\author{Malte Stær Nissen\\University of Copenhagen\\\texttt{malte.nissen@gmail.com} \and Supervisor: Sune Darkner\\University of Copenhagen\\\texttt{darkner@diku.dk}}
+\author{Malte Stær Nissen\\
+        University of Copenhagen\\
+        \texttt{malte.nissen@gmail.com} \and
+        Supervisor: Sune Darkner\\University of Copenhagen\\\texttt{darkner@diku.dk}}
 
 \begin{document}
 \maketitle
@@ -75,6 +78,11 @@ finest scale, which increases with the scale of the mesh and hence we are able
 to increase the time step as well without violating the stability condition.
 
 \section{Method}
+
+\begin{align}
+F_k &= -k \\
+F_m &= -F
+\end{align}
 
 \section{Experiments and results}
 

@@ -1,4 +1,4 @@
-function [F, dx] = springForces(positions, springs, dt, v, K, x0, C)
+function [F, dx] = springForces(positions, springs, v, K, x0, C)
     % Initialize internal variables
     cntS = size(springs,1);
     cntP = size(positions,1);

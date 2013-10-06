@@ -1,4 +1,4 @@
-function [positions, lengths, times] = springSim(fps_lowest, t_stop)
+function [positions, lengths, times, switches] = springSim(fps_lowest, t_stop)
     % Create grid of particles at positions
     pP = [-2:0.5:1.99, 2:0.15:2.99, 3:0.5:6.99]';
     %pP = [-2:1:2];
@@ -60,6 +60,7 @@ function [positions, lengths, times] = springSim(fps_lowest, t_stop)
     positions = [];
     lengths = [];
     times = [];
+    switches = [];
 
     % subdivide particles
     pSub = [];
@@ -78,7 +79,7 @@ function [positions, lengths, times] = springSim(fps_lowest, t_stop)
         end
 
         % Force calculation
-        [pF dx] = springForces(pP, sp, dt, pV, spK, spX0, spC);
+        [pF dx] = springForces(pP, sp, pV, spK, spX0, spC);
 
         % Position and velocity update
         [dp dv] = springStep(pP, pM, pV, sum(pF,2), dt);
@@ -86,25 +87,29 @@ function [positions, lengths, times] = springSim(fps_lowest, t_stop)
         % Detect collisions / switches in position
         l = springLength(pP + dp, sp);
         l2 = springLength(pP, sp);
-        mask = l .* l2 < 0 & l+l2 < 0;
+        mask = (l .* l2 < 0) & (l+l2 < 0);
         if any(mask)
-            disp('Switch!');
+            dt = 1/30;
+            disp('Switch in next iteration!');
             disp(time);
             pSub = unique(sp(mask,:));
+            cnt = size(pSub,1);
+            switches(end+1:end+cnt,:) = [repmat(time,[cnt 1]), pSub];
             dt = dt/10;
+            pV(pSub) = 0;
+            [pF dx] = springForces(pP, sp, pV, spK, spX0, spC);
 
-            [pF dx] = springForces(pP, sp, dt, pV, spK, spX0, spC);
             [dp dv] = springStep(pP, pM, pV, sum(pF,2), dt);
         end
-
-        % Subdivide
-        pP = pP + dp;
-        pV = pV + dv;
 
         % Registration
         positions(:,end+1) = pP;
         lengths(:,end+1) = -dx;
         times(end+1) = time;
+
+        % Subdivide
+        pP = pP + dp;
+        pV = pV + dv;
 
         % Time update
         time = time+dt;

@@ -13,12 +13,20 @@ function displaySim(data, fps)
         title(['Spring lengths for ' num2str(fps(i)) ' fps']);
         xlabel('Time');
         ylabel('Spring length');
-        axis([0 max(data{i,3}) 0.2 0.55]);
+        axis([0 max(data{i,3}) -0.3 0.55]);
         subplot(2, cntD, plot2);
         plot(data{i,3},data{i,1});
         title(['Simulation trace ' num2str(fps(i)) ' fps']);
         xlabel('Time');
         ylabel('Position');
+        hold on;
+        for j = 1:size(data{i,4},1)
+            time = data{i,4}(j,1);
+            ind1 = data{i,4}(j,2);
+            ind2 = data{i,4}(j,3);
+            plot(time,data{i,1}(ind1, data{i,3} == time),'xr');
+            plot(time,data{i,1}(ind2, data{i,3} == time),'xr');
+        end
         axis([0 max(data{i,3}) -2 7]);
     end
 
