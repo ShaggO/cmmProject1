@@ -16,20 +16,20 @@
 
 \usepackage{scalefnt}
 
-\usetheme[unit=ics,dk]{Frederiksberg}
+\usetheme[unit=ics]{Frederiksberg}
 \useinnertheme{MLHacks}
 
 \AtBeginSection[]
 {
 	\begin{frame}<beamer>
-		\frametitle{Emne}
+		\frametitle{Agenda}
 		\tableofcontents[currentsection,hideothersubsections]
 		\ghostframe
 	\end{frame}
 }
 
-\title{Local Adaptive Optimization of Time Stepi - Experimental plan}
-\subtitle{CMM Project Course}
+\title{Local Adaptive Optimization of Time Step}
+\subtitle{Experimental plan}
 \author{Malte Stær Nissen}
 \institute{Datalogisk Institut}
 \date{\today}
@@ -45,141 +45,65 @@
 
 \frame[plain]{\titlepage}
 
-\begin{frame}{Content}
+\begin{frame}{Agenda}
 	\setbeamercovered{highly dynamic}
 	\begin{center}
 	\tableofcontents[pausesections,hideothersubsections]
 	\end{center}
 \end{frame}
 
-\section{}
-\begin{frame}{Short introduction}
-	\begin{itemize}
+\section{The project in short}
+\begin{frame}{Short introduction to the project}
+    \begin{itemize}
 		\item Simulations of materials
-		\item Heavy computations
-        \item Reduce number of calculations
+		\item Huge amount of computations for large materials
+        \item Reduce avg. number of calculations/time
 	\end{itemize}
 \end{frame}
 
-\section{}
-\begin{frame}{Experimental plan overview}
+\begin{frame}{Illustration of motivation}
+    \begin{figure}
+        \center
+        \includegraphics[width=\linewidth,keepaspectratio]{../images/spring_motivation.png}
+        \caption{Simulations of mass spring particle system}
+        \label{fig:motivation}
+    \end{figure}
 \end{frame}
 
-\section{Tests og resultater}
-
-\begin{frame}{Eksempel på original maske}
-		\includegraphics[height=7cm]{graphics/sa_breast_pectoral.png}
+\section{Experimental plan}
+\begin{frame}{Overview of experiments}
+    \begin{itemize}
+        \item 1D experiments (simple)
+        \item 2D experiments (more complex)
+        \item Apply methods for uniform meshes 
+        \item Apply methods for multi-scale meshes
+        \item Compare method with regular timestepping
+    \end{itemize}
 \end{frame}
 
-\begin{frame}{Middelværdier for histogrammerne}
-
-	{\scalefont{0.8}
-	\begin{table}
-		\centering
-		\begin{tabular}{l l| l | l | l | l | l |}
-			\cline{2-7}
-			 & \multicolumn{6}{|c|}{Middelværdi} \\ \hline
-			\multicolumn{1}{| l |}{Metode}		& PSE	&	PSP	&	BSE	&	BSP 	&	TSE	& TSP \\ \hline \hline
-			\multicolumn{1}{| l |}{Karssemeijer $M_K$} & 0.8073 & 0.9931 & 0.8940 & 0.9603 & \multirow{2}{*}{0.9235} & \multirow{2}{*}{0.9845} \\ \cline{1-5} 
-			\multicolumn{1}{| l |}{Canny  $M_C$}	& 0.7231 & 0.9982 & 0.9055 & 0.9469 & & \\ \hline
-			\multicolumn{1}{| l |}{Blackbox $M_B$} & 0.7023 & 0.9542 & 0.8300 & 0.9616 & 0.9088 & 0.9745 \\ \hline
-		\end{tabular}
-		\caption{Oversigt over middelværdierne for testparametrene}
-		\label{tbl:test_mean_values}
-	\end{table}
-	}
+\subsection{1D experiments}
+\begin{frame}{1D experiments}
+    \begin{itemize}
+        \item Application: Mass spring particle system
+        \item Hook's law
+        \item Simplicity for ease of development
+    \end{itemize}
 \end{frame}
 
-\subsection{Præcisionstests}
-\begin{frame}{Præcision af segmenteringen}
-	\begin{itemize}
-		\item Ens masker giver ens segmenteringspunkter $A$, $B$ og $C$
-		\item Modellering af pektoralmusklen ved lige linje
-		\item Maskerne ``modificeres'' efterfølgende af vores program
-		\item Test på præcisionen af vores segmenteringer ved afvigelse mellem fundne $A_{gt}$, $B_{gt}$ og $C_{gt}$ på ground truth maskerne og $A$, $B$ og $C$ fundet vha. egen implementation
-	\end{itemize}
+\subsection{2D experiments}
+\begin{frame}{2D experiments}
+    \begin{itemize}
+        \item Extend 1D scheme
+        \item Application: Hyperelastic materials
+        \item Stress and strain
+    \end{itemize}
 \end{frame}
 
-\begin{frame}{Histogrammer for præcision på $A$}
-	\begin{figure}
-		\begin{subfigure}{0.32\linewidth}
-			\includegraphics[width=\linewidth,keepaspectratio]{graphics/karssemeijer_a_difference.png}
-			\caption{$M_K, A$}
-		\end{subfigure}
-		\begin{subfigure}{0.32\linewidth}
-			\includegraphics[width=\linewidth,keepaspectratio]{graphics/canny_a_difference.png}
-			\caption{$M_C, A$}
-		\end{subfigure}
-		\begin{subfigure}{0.32\linewidth}
-			\includegraphics[width=\linewidth,keepaspectratio]{graphics/blackbox_a_difference.png}
-			\caption{$M_B, A$}
-		\end{subfigure}
-	\end{figure}
-\end{frame}
-
-\begin{frame}{Histogrammer for præcision på $B$ og $C$}
-	\begin{figure}
-		\begin{subfigure}{0.32\linewidth}
-			\includegraphics[width=\linewidth,keepaspectratio]{graphics/karssemeijer_b_difference.png}
-			\caption{$M_K, B$}
-		\end{subfigure}
-		\begin{subfigure}{0.32\linewidth}
-			\includegraphics[width=\linewidth,keepaspectratio]{graphics/canny_b_difference.png}
-			\caption{$M_C, B$}
-		\end{subfigure}
-		\begin{subfigure}{0.32\linewidth}
-			\includegraphics[width=\linewidth,keepaspectratio]{graphics/blackbox_b_difference.png}
-			\caption{$M_B, B$}
-		\end{subfigure}
-		\begin{subfigure}{0.32\linewidth}
-			\includegraphics[width=\linewidth,keepaspectratio]{graphics/karssemeijer_c_difference.png}
-			\caption{$M_K, C$}
-		\end{subfigure}
-		\begin{subfigure}{0.32\linewidth}
-			\includegraphics[width=\linewidth,keepaspectratio]{graphics/canny_c_difference.png}
-			\caption{$M_C, C$}
-		\end{subfigure}
-		\begin{subfigure}{0.32\linewidth}
-			\includegraphics[width=\linewidth,keepaspectratio]{graphics/blackbox_c_difference.png}
-			\caption{$M_B, C$}
-		\end{subfigure}
-	\end{figure}
-\end{frame}
-
-\begin{frame}{Middelværdier}
-	\begin{table}
-		\begin{tabular}{l | r | r | r |}
-			\cline{2-4}
-			{} & \multicolumn{3}{| c |}{ Middelværdi } \\ \hline
-			\multicolumn{1}{| l |}{Metode}			&	$A$ (cm)		&	$B$ (cm)		& 	$C$ (cm) \\ \hline \hline
-			\multicolumn{1}{| l |}{Karssemeijer $M_K$}	&	1.7202	&	2.622  	&	3.9531 \\ \hline
-			\multicolumn{1}{| l |}{Canny $M_C$}		&	1.4559	&	2.300  	&	3.3958 \\ \hline
-			\multicolumn{1}{| l |}{Blackbox $M_B$}		&	2.1541	&	3.8948	&	5.1714 \\ \hline
-		\end{tabular}
-		\caption{Middelværdier for afvigelsen på punkterne $A$, $B$ og $C$}
-	\end{table}
-\end{frame}
-\section{Diskussion}
-\subsection{Indre begrænsninger}
-\begin{frame}{Systemernes begrænsninger}
-	\begin{enumerate}
-		\item For små mammografier i forhold til brystet
-		\item Manglende skin-air grænse/brystvæv
-		\item Manglende pektoralmuskel
-	\end{enumerate}
-\end{frame}
-\subsection{Problemer ved overførsel til nyt system}
-\begin{frame}{Problemer ved overførsel til nyt system}
-	\begin{enumerate}
-		\item Projektionsretning (ML, MLO, CC, LM)
-		\item Intensitetsværdier
-		\item Mammografidimensioner
-	\end{enumerate}
-\end{frame}
-
-\begin{frame}{Detaljeret overblik}
-	\input{flowchart/overall_detail}
+\subsection{Performance experiments}
+\begin{frame}{Performance experiments}
+    \begin{itemize}
+        \item Total simulation time
+    \end{itemize}
 \end{frame}
 
 \end{document}
-
