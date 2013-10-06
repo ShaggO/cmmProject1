@@ -2,7 +2,7 @@ function displaySim(data, fps)
     movie = false;
     animation = false;
 
-    figure();
+    fi = figure();
     cntD = size(data,1);
     for i = 1:cntD
         i0 = i-1;
@@ -29,6 +29,8 @@ function displaySim(data, fps)
         end
         axis([0 max(data{i,3}) -2 7]);
     end
+
+    saveas(fi, '../../../images/spring_motivation.png');
 
 %    if animation
 %        figure();

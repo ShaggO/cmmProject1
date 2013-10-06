@@ -1,6 +1,7 @@
 function displaySim(data, fps)
     movie = false;
     animation = false;
+    timesteps = false;
 
     figure();
     cntD = size(data,1);
@@ -27,10 +28,12 @@ function displaySim(data, fps)
             plot(time,data{i,1}(ind1, data{i,3} == time),'xr');
             plot(time,data{i,1}(ind2, data{i,3} == time),'xr');
         end
-        updPoints = find(data{i,5});
-        plot(data{i,3}(updPoints),data{i,1}(:,updPoints),'-xr');
+        if timesteps
+            updPoints = find(data{i,5});
+            plot(data{i,3}(updPoints),data{i,1}(:,updPoints),'-xr');
+            disp(length(updPoints) / max(data{i,3}));
+        end
         axis([0 max(data{i,3}) -2 7]);
-        disp(length(updPoints) / max(data{i,3}));
     end
 
 %    if animation

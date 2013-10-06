@@ -1,6 +1,6 @@
 clear all;
 close all;
-t_stop = 200;
+t_stop = 500;
 fpses = [10, 2, 1];
 results = cell(length(fpses),4);
 for i = 1:length(fpses)

@@ -89,14 +89,14 @@ function [positions, lengths, times, switches] = springSim(fps_lowest, t_stop)
         l2 = springLength(pP, sp);
         mask = (l .* l2 < 0) & (l+l2 < 0);
         if any(mask)
-            dt = 1/30;
+%            dt = 1/30;
             disp('Switch in next iteration!');
             disp(time);
             pSub = unique(sp(mask,:));
             cnt = size(pSub,1);
             switches(end+1:end+cnt,:) = [repmat(time,[cnt 1]), pSub];
-            dt = dt/10;
-            pV(pSub) = 0;
+%            dt = dt/10;
+%            pV(pSub) = 0;
             [pF dx] = springForces(pP, sp, pV, spK, spX0, spC);
 
             [dp dv] = springStep(pP, pM, pV, sum(pF,2), dt);
