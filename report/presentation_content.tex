@@ -9,6 +9,7 @@
 
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows}
+\newcommand{\itemv}[1]{\item{#1}}
 
 \tikzset{onslide/.code args={<#1>#2}{%
   \only<#1>{\pgfkeysalso{#2}} % \pgfkeysalso doesn't change the path
@@ -54,17 +55,24 @@
 
 \section{The project in short}
 \begin{frame}{Short introduction to the project}
-    \begin{itemize}
-		\item Simulations of materials
-		\item Huge amount of computations for large materials
-        \item Reduce avg. number of calculations/time
+    \pause\begin{itemize}[<+->]
+		\itemv Materials
+        \begin{itemize}
+            \itemv In real life: Continuous
+            \itemv In simulations: Discrete representations using
+                particles/grids
+        \end{itemize}
+		\itemv Large/detailed materials = huge amount of particles/vertices
+        \itemv Varying grid size/scale
+        \itemv Simulation of time
+        \itemv Reduce avg. number of calculations/time
 	\end{itemize}
 \end{frame}
 
 \begin{frame}{Illustration of motivation}
     \begin{figure}
         \center
-        \includegraphics[width=\linewidth,keepaspectratio]{../images/spring_motivation.png}
+        \includegraphics[width=\linewidth,height=6cm]{../images/spring_motivation.png}
         \caption{Simulations of mass spring particle system}
         \label{fig:motivation}
     \end{figure}
@@ -72,37 +80,45 @@
 
 \section{Experimental plan}
 \begin{frame}{Overview of experiments}
-    \begin{itemize}
-        \item 1D experiments (simple)
-        \item 2D experiments (more complex)
-        \item Apply methods for uniform meshes 
-        \item Apply methods for multi-scale meshes
-        \item Compare method with regular timestepping
+    \pause\begin{itemize}[<+->]
+        \itemv 1D experiments (simple)
+        \itemv 2D experiments (more complex)
+        \itemv Use experiments to develop schemes
+        \itemv Apply methods for uniform meshes 
+        \itemv Apply methods for multi-scale meshes
+        \itemv Compare method with regular timestepping
     \end{itemize}
 \end{frame}
 
 \subsection{1D experiments}
 \begin{frame}{1D experiments}
-    \begin{itemize}
-        \item Application: Mass spring particle system
-        \item Hook's law
-        \item Simplicity for ease of development
+    \pause\begin{itemize}[<+->]
+        \itemv 1D for simplicity and ease of development
+        \itemv Develop a scheme from experimenting
+        \itemv Application: Mass spring particle system (clothes)
+        \itemv Hook's law
+        \itemv Uniform and multi-scale meshes and simulations
     \end{itemize}
 \end{frame}
 
 \subsection{2D experiments}
 \begin{frame}{2D experiments}
-    \begin{itemize}
-        \item Extend 1D scheme
-        \item Application: Hyperelastic materials
-        \item Stress and strain
+    \pause\begin{itemize}[<+->]
+        \itemv Extend 1D scheme to 2D
+        \itemv Gain in complexity
+        \itemv Application: Hyperelastic materials
+        \itemv Stress and strain
+        \itemv Uniform and multi-scale meshes and simulations
     \end{itemize}
 \end{frame}
 
 \subsection{Performance experiments}
 \begin{frame}{Performance experiments}
-    \begin{itemize}
-        \item Total simulation time
+    \pause\begin{itemize}[<+->]
+        \itemv Total simulation time
+        \itemv Compare our 2D scheme with regular time stepping
+        \itemv Only sequential tests
+        \itemv Only in Matlab
     \end{itemize}
 \end{frame}
 
