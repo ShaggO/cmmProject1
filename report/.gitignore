@@ -9,3 +9,7 @@
 *.lof
 *.lot
 *.toc
+notes.tex
+*.nav
+*.out
+*.snm
