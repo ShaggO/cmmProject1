@@ -1,5 +1,5 @@
 function [F, dx] = springForces(positions, springs, lUpdate, v, K, x0, C)
-    element = true;
+    element = false;
     % Initialize internal variables
     cntS = size(springs,1);
     cntP = size(positions,1);

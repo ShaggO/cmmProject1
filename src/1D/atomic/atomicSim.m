@@ -1,9 +1,7 @@
-function [positions, lengths, times, switches, active] = springSim(fps, t_stop)
+function [positions, lengths, times, switches, active] = springSim(fps, t_stop, stepBound, rFactor)
     %% Initialize particles
     % Create grid of particles at positions
     pP = [-2:0.5:1.99, 2:0.15:2.99, 3:0.5:6.99]';
-    rFactor = 2;
-    stepBound = 65;
 
     % Initialize variables
     cntP = size(pP,1);
@@ -50,14 +48,11 @@ function [positions, lengths, times, switches, active] = springSim(fps, t_stop)
         active(end+1) = length(spA);
 
         % Force calculation of active springs/particles
-        if (length(spA) > 0)
-            [pF dx] = springForces(pP, sp(spA,:), spL, pV,...
+        [pF dx] = springForces(pP, sp(spA,:), spL, pV,...
                                    spK(spA), spX0(spA), spC(spA));
-        end
 
         % Position and velocity update
         [dp dv] = springStep(pP, pM, pV, sum(pF,2), dt, pA, sp, spSteps);
-
         % Detect collisions / switches in position
         l = springLength(pP + dp, sp);
         l2 = springLength(pP, sp);

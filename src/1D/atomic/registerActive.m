@@ -11,20 +11,18 @@ lUpdate, velocities, time, dt, factor, steps, stepBound)
     l = springLength(positionsFull, springs);
 
     % Ratio between last updated length and next
-    ratio = lUpdate ./ l;
+    ratio = l ./ lUpdate;
 
     % Find indices of violating springs and points
-    sMask = ratio > factor | ratio < 1/factor;
+    sMask = ratio > factor | ratio <= 1/factor;
     if time == 0
         sMask = ones(size(springs,1),1);
-%    else
-%        sMask = zeros(size(springs,1),1);
     end
     if ~isnan(stepBound)
         sMask = sMask | steps >= stepBound;
     end
     % Temporary override to debug the rest of the simulator
-    sMask = find(sMask);
+    sMask = find(sMask > 0);
     pMask = unique(springs(sMask,:));
 
     % Update last updated lengths and number of steps since update
