@@ -7,6 +7,8 @@
 
 \usepackage{amsmath,amssymb,amsfonts}
 
+\providecommand{\abs}[1]{\left \lvert #1 \right \rvert}
+
 \title{Local Adaptive Optimization of Time step}
 \author{Malte Stær Nissen\\
         University of Copenhagen\\
@@ -22,18 +24,18 @@
 
 \section{Introduction}
 Simulations of large (order of millions of vertices) hyper elastic materials
-are very time consuming. When working with materials of varying density of
-vertices, the highest densities often make the most strict bounds on size of
-the time step of the simulation in order to keep the materials (and grids)
-stable. In a ``standard'' simulation with a global time step size we need
-to compute possibly unnecessarily many computations on the coarser parts of
-the material caused by this bound. When furthermore having materials with a
-large amount of somewhat equally distributed vertices and smaller patches of
-detailed areas with higher density of vertices, it would be an advantage to be
-able to perform large time steps for the majority of the material and smaller
-steps for the local patches when vertices cause instability. We call this
-concept local adaptive optimization of time step, which we will study further
-in this report.
+are very time consuming. When working with materials of varying density
+of vertices, the highest densities often make the most strict bounds on
+size of the time step of the simulation in order to keep the materials (and
+grids) stable and the discretization correct. In a ``standard'' simulation
+with a global time step size we need to compute possibly unnecessarily many
+computations on the coarser parts of the material caused by this bound.
+When furthermore having materials with a large amount of somewhat equally
+distributed vertices and smaller patches of detailed areas with higher density
+of vertices, it would be an advantage to be able to perform large time steps
+for the majority of the material and smaller steps for the local patches when
+vertices cause instability. We call this concept local adaptive optimization
+of time step, which we will study further in this report.
 
 \section{Previous work}
 As according to \cite{Gander:2013} local time stepping was first studied
@@ -78,13 +80,44 @@ finest scale, which increases with the scale of the mesh and hence we are able
 to increase the time step as well without violating the stability condition.
 
 \section{Method}
+We will in this report consider the 1 dimensional problem of simulating a mass
+spring system, which is usually used for simulating cloth and hair etc. A mass
+spring system is a system consisting of a set of vertices $V$ each having a
+specified mass $m$, force $F$ and velocity $u$ and a set of springs $S$ with two
+endpoints $p_f \in V$ and $p_t \in V \setminus p_f$. Each spring has a damping
+factor $d$, stiffness constant $K$ and rest length $l_0$ describing the state of
+the spring.
 
-\begin{align}
-F_k &= -k \\
-F_m &= -F
-\end{align}
+Things to write about (notes):
+
+Damping force $F_d$:
+\begin{align*}
+    \Delta l &= l_{left} - l_{right} \\
+    F_d      &= - C_d v(i) =  - C_d \frac{\left(v_{left} - v_{right}\right)
+\Delta l}{\abs{\Delta l}}
+\end{align*}
+
+Spring force $F_s$:
+\begin{align*}
+    F_s = kx = -k \left( l - l_0 \right)
+\end{align*}
+
+Explicit Euler method:
+\begin{align*}
+    x(t+h) &= x(t) + h \frac{\partial x(t)}{\partial t}
+\end{align*}
+
+Midpoint method:
+\begin{align*}
+    x(t+h) = x(t) + h \left( f \left(x + \frac{h}{2} f \left(t \right) \right) \right)
+\end{align*}
 
 \section{Experiments and results}
+
+\subsection{Initial though}
+Normal timestepping with switch detection and refinement
+
+\subsection{Stepping with interpolation and lockout of re-calculations}
 
 \section{Discussion}
 

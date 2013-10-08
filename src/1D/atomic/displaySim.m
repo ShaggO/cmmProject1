@@ -1,7 +1,7 @@
 function displaySim(data, fps)
     movie = false;
     animation = false;
-    timesteps = false;
+    timesteps = true;
 
     figure();
     cntD = size(data,1);

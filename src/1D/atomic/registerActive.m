@@ -1,5 +1,5 @@
 function [pMask sMask lUpdate, steps] = registerActive(positions, springs,...
-lUpdate, velocities, time, dt, factor, steps, stepBound)
+lUpdate, velocities, time, dt, factor, steps, stepBound, rest)
     if nargin < 9
         stepBound = NaN;
     end
@@ -11,13 +11,13 @@ lUpdate, velocities, time, dt, factor, steps, stepBound)
     l = springLength(positionsFull, springs);
 
     % Ratio between last updated length and next
-    ratio = l ./ lUpdate;
+    ratio = abs(l-rest);
+    ratio2 = abs(l ./ lUpdate);
 
     % Find indices of violating springs and points
+    sMask = zeros(size(l));
     sMask = ratio > factor | ratio <= 1/factor;
-    if time == 0
-        sMask = ones(size(springs,1),1);
-    end
+%    sMask = ratio2 > factor | ratio2 <= 1/factor | sMask;
     if ~isnan(stepBound)
         sMask = sMask | steps >= stepBound;
     end

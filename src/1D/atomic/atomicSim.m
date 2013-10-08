@@ -1,7 +1,8 @@
 function [positions, lengths, times, switches, active] = springSim(fps, t_stop, stepBound, rFactor)
     %% Initialize particles
     % Create grid of particles at positions
-    pP = [-2:0.5:1.99, 2:0.15:2.99, 3:0.5:6.99]';
+    %pP = [-2:0.5:1.99, 2:0.15:2.99, 3:0.5:6.99]';
+    pP = [-2:2:2]';
 
     % Initialize variables
     cntP = size(pP,1);
@@ -23,10 +24,10 @@ function [positions, lengths, times, switches, active] = springSim(fps, t_stop, 
     cntS = size(sp,1);
 
     % Set up initial measurements for each spring
-    spC = ones(cntS,1) * 0.5;   % Damping
+    spC = ones(cntS,1) * 0.01;   % Damping
     spK = ones(cntS,1) * 0.5;   % Stiffness
     spX0 = pP(sp);
-    spX0 = abs(spX0(:,1) - spX0(:,2)) * 0.8;
+    spX0 = abs(spX0(:,1) - spX0(:,2)) * 0.6;
     spD = ones(cntS,1) * 0.1;   % Viscous drag
     spL = springLength(pP,sp);  % Length at last update
     spSteps = zeros(cntS,1);    % Number of steps since last update
@@ -44,7 +45,8 @@ function [positions, lengths, times, switches, active] = springSim(fps, t_stop, 
 
         % Find active particles pA and active springs spA
         [pA spA spL spSteps_new] = registerActive(pP, sp, spL, pV, time, dt,...
-                                                 rFactor, spSteps, stepBound);
+                                                 rFactor, spSteps, stepBound,...
+                                                 spX0);
         active(end+1) = length(spA);
 
         % Force calculation of active springs/particles
@@ -62,7 +64,7 @@ function [positions, lengths, times, switches, active] = springSim(fps, t_stop, 
             disp(time);
             pSub = unique(sp(mask,:));
             cnt = size(pSub,1);
-            switches(end+1:end+cnt,:) = [repmat(time,[cnt 1]), pSub];
+%            switches(end+1:end+cnt,:) = [repmat(time,[cnt 1]), pSub];
         end
 
         % Registration
