@@ -29,7 +29,7 @@ function [positions, lengths, times, switches] = springSim(fps_lowest, t_stop)
     spC = ones(cntS,1) * 0.5;   % Damping
     spK = ones(cntS,1) * 0.5;   % Stiffness
     spX0 = pP(sp);
-    spX0 = abs(spX0(:,1) - spX0(:,2)) * 0.8;
+    spX0 = abs(spX0(:,1) - spX0(:,2)) * 0.79;
     spD = ones(cntS,1) * 0.1;   % Viscous drag
 
     distance_show = false;
@@ -70,6 +70,7 @@ function [positions, lengths, times, switches] = springSim(fps_lowest, t_stop)
     dx = zeros(cntS,1);
     pF = zeros(cntP,2);
     while time <= t_stop + 1e-5;
+        pP = pP + pV * dt;
 
         % Check for subdivision
         if dt < dt_base && length(pSub) > 0
@@ -108,7 +109,6 @@ function [positions, lengths, times, switches] = springSim(fps_lowest, t_stop)
         times(end+1) = time;
 
         % Subdivide
-        pP = pP + dp;
         pV = pV + dv;
 
         % Time update
