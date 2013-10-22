@@ -7,7 +7,7 @@ function displaySim(data, fps)
     for i = 1:cntD
         i0 = i-1;
         plot1 = i;
-        plot2 = plot1+3;
+        plot2 = plot1+size(data,1);
         subplot(2, cntD, plot1);
         plot(data{i,3},data{i,2});
         title(['Spring lengths for ' num2str(fps(i)) ' fps']);

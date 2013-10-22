@@ -1,4 +1,4 @@
-function [F, dx] = springForces(positions, springs, lUpdate, v, K, x0, C)
+function [F, dx] = springForces(positions, springs, v, K, x0, C)
     element = false;
     % Initialize internal variables
     cntS = size(springs,1);
@@ -41,6 +41,7 @@ function [F, dx] = springForces(positions, springs, lUpdate, v, K, x0, C)
         Fs = Fs + C .* (v(from) - v(to)) .* dx ./ l;
         Fs = Fs .* (-dx ./ l);
 
+        % Apply forces to endpoints
         F(from,1) = F(from,1) + Fs;
         F(to,2)   = F(to,2) - Fs;
 

@@ -28,7 +28,6 @@ function [positions, lengths, times, switches, active] = springSim(fps, t_stop, 
     spK = ones(cntS,1) * 0.5;   % Stiffness
     spX0 = pP(sp);
     spX0 = abs(spX0(:,1) - spX0(:,2)) * 0.6;
-    spD = ones(cntS,1) * 0.1;   % Viscous drag
     spL = springLength(pP,sp);  % Length at last update
     spSteps = zeros(cntS,1);    % Number of steps since last update
 
@@ -50,7 +49,7 @@ function [positions, lengths, times, switches, active] = springSim(fps, t_stop, 
         active(end+1) = length(spA);
 
         % Force calculation of active springs/particles
-        [pF dx] = springForces(pP, sp(spA,:), spL, pV,...
+        [pF dx] = springForces(pP, sp(spA,:), pV,...
                                    spK(spA), spX0(spA), spC(spA));
 
         % Position and velocity update
@@ -58,7 +57,7 @@ function [positions, lengths, times, switches, active] = springSim(fps, t_stop, 
         % Detect collisions / switches in position
         l = springLength(pP + dp, sp);
         l2 = springLength(pP, sp);
-        mask = (l .* l2 < 0) & (l+l2 < 0);
+        mask = l .* l2 < 0;
         if any(mask)
             disp('Switch in next iteration!');
             disp(time);

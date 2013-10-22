@@ -1,4 +1,4 @@
-function displaySim(data, fps)
+function displaySim(data, fps, settings)
     movie = false;
     animation = false;
     timesteps = true;

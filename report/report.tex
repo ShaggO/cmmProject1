@@ -23,18 +23,18 @@
 \clearpage
 
 \section{Introduction}
-Simulations of large (order of millions of vertices) hyper elastic materials
-are very time consuming. When working with materials of varying density
+simulations of large (order of millions of vertices) hyper elastic materials
+are very time consuming. when working with materials of varying density
 of vertices, the highest densities often make the most strict bounds on
 size of the time step of the simulation in order to keep the materials (and
-grids) stable and the discretization correct. In a ``standard'' simulation
+grids) stable and the discretization correct. in a ``standard'' simulation
 with a global time step size we need to compute possibly unnecessarily many
 computations on the coarser parts of the material caused by this bound.
-When furthermore having materials with a large amount of somewhat equally
+when furthermore having materials with a large amount of somewhat equally
 distributed vertices and smaller patches of detailed areas with higher density
 of vertices, it would be an advantage to be able to perform large time steps
 for the majority of the material and smaller steps for the local patches when
-vertices cause instability. We call this concept local adaptive optimization
+vertices cause instability. we call this concept local adaptive optimization
 of time step, which we will study further in this report.
 
 \section{Previous work}
@@ -114,12 +114,15 @@ Midpoint method:
 
 \section{Experiments and results}
 
-\subsection{Initial though}
-Normal timestepping with switch detection and refinement
+\subsection{Switch}
 
-\subsection{Stepping with interpolation and lockout of re-calculations}
+\subsection{Spatial LAOT}
+
+\subsection{Inverse}
 
 \section{Discussion}
+
+Adaptive timestepping based on highest acceleration/smallest grid
 
 \section{Conclusion}
 

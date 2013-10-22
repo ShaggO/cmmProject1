@@ -26,15 +26,16 @@ Course specific learning goals:
 Project specific learning goals:
 \begin{enumerate}
     \item Implement local adaptive optimization of timesteps (LAOT)
-	\item Evaluate LAOT to minimize the risk of unwanted deformations in grids.
+	\item Evaluate LAOT to minimize the risk of unwanted deformations in grids
+        and minimize the computational cost.
     \item Discuss how LAOT is performed in practice using existing 2nd order optimization methods.
-    \item Study of convergence on implemented methods.
 \end{enumerate}
 
 \section{Problem Description}
 
 \subsection{Problem Statement}
-Study the application of locally adaptive timestepping in simulation of hyperelastic materials.
+Study the application of locally adaptive timestepping in 1 dimensional
+simulation of a mass spring system.
 
 \subsection{Motivation}
 When running a simulation of large hyperelastic materials we wish to make
@@ -44,7 +45,8 @@ the mesh from curling up or exploding due to too large determinants of the
 moving mesh vertices. In some hyperelastic materials most of the
 discretized points are able to be simulated using larger timesteps whereas
 smaller areas might need smaller timesteps. These situations are the ones
-we wish to accomodate in this paper.
+we wish to accomodate in this paper by gaining insight into the area of LAOT in
+a simple 1 dimensional simulation (mass spring system).
 
 \subsection{Proposed solution}
 We wish to develop a method for locally adapting the timestep size in
@@ -57,11 +59,7 @@ areas of the grid with smaller timesteps.
 To gain insight into the application of LAOT.
 
 \subsection{Risk assessment}
-Low to none. The technique has been performed before in various shapes and it
-should therefore be do-able.
-
-\cite{Keshav:2007}
-\bibliography{bibliography}
-\bibliographystyle{plain}
+Medium. The technique of LAOT has been performed before in various shapes but
+not the same as our proposed solution.
 
 \end{document}
