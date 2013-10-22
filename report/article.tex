@@ -38,6 +38,7 @@
 \usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
 \usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
 
+\usepackage{todonotes}
 \usepackage{amsmath,amssymb,amsfonts}
 \providecommand{\abs}[1]{\left \lvert #1 \right \rvert}
 
@@ -63,7 +64,7 @@
 %----------------------------------------------------------------------------------------
 
 \title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{Local Adaptive
-Optimization of Time step}} % Article title
+Optimization of Time Step}} % Article title
 
 \author{
 \large
@@ -100,7 +101,7 @@ helping me realize this project}\\[2mm] % Your name
 
 \section{Introduction}
 \lettrine[nindent=0em,lines=3]{S} imulations of large hyper elastic materials
-are very time consuming. When working with materials of varying density
+can be very time consuming. When working with materials of varying density
 of vertices/scale of mesh, the highest densities often make the most
 strict bounds on size of the time step of the simulation in order to keep
 the materials (and grids) stable and the discretization correct. in a
@@ -109,14 +110,18 @@ possibly unnecessarily many computations on the coarser parts of the material
 caused by this bound. When furthermore having materials with a large amount
 of somewhat equally distributed vertices and smaller patches of detailed
 areas with higher density of vertices, it would be an advantage to be able
-to perform large time steps for the majority of the material and smaller
-steps for the local patches where vertices could cause instability. we call
-the concept of varying the timestep local adaptive optimization of time step
-(LAOT), in which local either refer to spatial locality or time locality. We
-will in this report study LAOT in the simple 1 dimensional simulation of a
-mass spring system in order to gain knowledge into the field for further use
-in simulation of hyper elastic materials. We will first describe the simulation
-problem and then go into the study of the application of LOAT herein.
+to perform large time steps for the majority of the material (the coarse
+parts) and smaller steps for the local patches where vertices could cause
+instability. we call the concept of varying the timestep local adaptive
+optimization of time step (LAOTS), in which ``local'' either refers to spatial
+locality (as described above) or time locality where the time step is global
+for all vertices but varies during the simulation. We will in this report
+study possible approaches for application of LAOTS. In order to keep the focus
+on possible LAOTS methods and remove unneccessary complexities we will study
+the simple 1 dimensional simulation of a mass spring system and try to apply
+LAOTS for it. Afterwards we will shortly discuss the application of our gained
+knowledge to the domain of hyper elastic material simulation and simulations
+in general.
 
 %------------------------------------------------
 
@@ -167,13 +172,47 @@ to increase the time step as well without violating the stability condition.
 
 \section{Methods}
 
-We will in this report consider the 1 dimensional problem of simulating a mass
-spring system, which is usually (in 3 dimensions) used for simulating
-cloth and hair etc. A mass spring system is a system consisting of a set of
-vertices $V$ each having a specified mass $m$, force $F$ and velocity $u$ and
-a set of springs $S$ with two endpoints $p_f \in V$ and $p_t \in V \setminus
-p_f$. Each spring $s$ has a damping factor $d_s$, a stiffness constant $K_s$ and a rest
-length $l_{s0}$ describing the spring's physical properties.
+With no prerequisites within the field of mass simulations we will first
+consider the 1D problem of simulating a mass spring system using the explicit
+(forward) Euler method.
+
+Second we will propose and test out three different methods for applying LAOTS
+to the simulation.
+
+Third and last we will discussion the results and how we
+could apply our knowledge of LAOTS for hyper elastic material.
+
+\subsection{1D mass spring system}
+Mass spring systems are systems simulating a set of vertices interconnected by
+springs in various ways to obtain desirable physical properties. The motion of
+the springs and vertices are then simulated as a function of the time elapsed.
+Examples of application of mass spring systems are for simulation of cloth or
+hair.
+
+Our mass spring system consists of a set $V$ of vertices and a set $S$ of
+springs. Each vertex $v \in V$ has a specified position $p_v$, mass $m_v$, force
+$F_v$
+and velocity $u_v$ and each spring $s$ has two endpoints vertices $p_{sf} \in V$
+and $p_{st} \in V \setminus p_{sf}$, a damping factor $d_s$, a stiffness
+constant $K_s$ and a rest length $l_{s0}$. Combined all these variables and
+constants describe the state of the mass spring system at each timestep during a
+simulation.
+
+As each vertex $v$ is connected to 1 or 2 springs, its motion can be calculated by
+the total force $F_v$ applied by the springs it is connected to. The spring
+force is calculated using Hooke's Law and adding damping [TODO: Add reference (wiki):
+    \url{http://en.wikipedia.org/wiki/Harmonic_oscillator}]:
+\begin{align}
+    \label{eq:hooke}
+    F_{h,d} &= -k_d x_d = -k_d (l_d - l_{0,d}) \\
+    \label{eq:damping}
+    F_{C,d} &= -C_d \frac{dx_d}{dt} = - C_d \frac{\left(v_{left} - v_{right}\right)
+\Delta l}{\abs{\Delta l}}
+\end{align}
+in which $F_h$ is the spring force of Hooke's Law, $F_c$ is the damping force,
+$k$ is the spring constant, $x$ is the difference between the current length of
+the spring and the spring rest length, $c$ is the damping constant and
+$\frac{dx}{dt}$ is the velocity of the vertex $v$.
 
 Things to write about (notes):
 
@@ -203,7 +242,7 @@ Midpoint method:
 \subsection{Switch}
 Change timestep when detecting collision/switch in next iteration
 
-\subsection{Spatial LAOT}
+\subsection{Spatial LAOTS}
 Atomic update
 
 Fixed update rate and detection of need for re-calculation of individual springs
