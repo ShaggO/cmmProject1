@@ -120,17 +120,16 @@ study possible approaches for application of LAOTS. In order to keep the focus
 on possible LAOTS methods and remove unneccessary complexities, we will study
 the simple 1 dimensional simulation of a mass-spring system and try to apply
 LAOTS for it. Afterwards we will shortly discuss the application of our gained
-knowledge to the domain of hyperelastic material simulation and simulations
-in general.
+knowledge to the domain of hyperelastic material simulation and simulations in
+general.
 
 %------------------------------------------------
 
-\section{Previous work}
-According to \cite{Gander:2013} local time stepping was first studied
-in the community of ordinary differential equations (ODE) with Rice
-\cite{rice:1960} developing the split Runge-Kutta methods (multi rate
-Runge-Kutta methods). The concept behind these methods is the splitting of
-the ODEs into multiple (two components in \cite{rice:1960}) components of
+\section{Previous work} According to \cite{Gander:2013} local time stepping
+was first studied in the community of ordinary differential equations (ODE)
+with Rice \cite{rice:1960} developing the split Runge-Kutta methods (multi
+rate Runge-Kutta methods). The concept behind these methods is the splitting
+of the ODEs into multiple (two components in \cite{rice:1960}) components of
 which each component needs to be integrated in different scales. A strategy
 is chosen as proposed in \cite{Kvaernoe:1999} of either computing the coarser
 part first (``Fastest first strategy'') followed by the finer part or vice
@@ -179,93 +178,77 @@ consider the 1D problem of simulating a mass-spring system using the explicit
 Second we will propose and test out three different methods for applying LAOTS
 to the simulation.
 
-Third and last we will discussion the results and how we
-could apply our knowledge of LAOTS for hyperelastic material.
+Third and last we will discussion the results and how we could apply our
+knowledge of LAOTS for hyperelastic material.
 
-\subsection{1D mass-spring system}
-Mass-spring systems are systems simulating a set of vertices interconnected by
-springs in various ways to obtain desirable physical properties. The motion of
-the springs and vertices are then simulated as a function of the time elapsed.
-Examples of application of mass-spring systems are simulation of cloth or hair.
+\subsection{1D mass-spring system} Mass-spring systems are systems simulating
+a set of vertices interconnected by springs in various ways to obtain
+desirable physical properties. The motion of the springs and vertices are
+then simulated as a function of the time elapsed. Examples of application of
+mass-spring systems are simulation of cloth or hair. When performing simulations
+we want to avoid a switch of position of spring-connected vertices caused by the
+timestep size of the simulation, since this invalidates our discretization of
+the domain. Furthermore we want to perform as few timesteps as possible in order
+to get to the final simulation state by using as big timesteps as possible
+without affecting the outcome of the simulation.
 
 When simulating the mass-spring system we perform the following steps:
-\begin{compactenum}
-    \item Initialize system
-    \item Calculate forces
-    \item Calculate derrivatives
-    \item Update positions and velocities
-    \item Update time
-    \item Go to step 2 if the simulation has not reached it's maximum simulation
-        time.
-\end{compactenum}
-We now describe the details of each of the steps of the simulation.
+\begin{compactenum} \item Initialize system \item Calculate forces \item
+Calculate derrivatives \item Update positions and velocities \item Update time
+\item Go to step 2 if the simulation has not reached it's maximum simulation
+time. \end{compactenum} We now describe the details of each of the steps of
+the simulation.
 
-Our 1D mass-spring system consists of a set $V$ of vertices and a set $S$ of
-springs. Each vertex $v \in V$ has a specified position $p_v$, mass $m_v$, force
-$F_v$
-and velocity $u_v$, and each spring $s \in S$ has two endpoints vertices $p_{f,s} \in V$
-and $p_{t,s} \in V \setminus p_{f,s}$, a damping factor $d_s$, a stiffness
-constant $K_s$ and a rest length $l_{0,s}$. All these variables and
-constants combined describe the state of the mass-spring system at each time $t$ during a
-simulation. All these variables are initialized in step 1.
+Our 1D mass-spring system consists of a set $V$ of vertices and a set
+$S$ of springs. Each vertex $v \in V$ has a specified position $p_v$,
+mass $m_v$, force $F_v$ and velocity $u_v$, and each spring $s \in S$
+has two endpoints vertices $p_{f,s} \in V$ and $p_{t,s} \in V \setminus
+p_{f,s}$, a damping factor $d_s$, a stiffness constant $K_s$ and a rest length
+$l_{0,s}$. All these variables and constants combined describe the state
+of the mass-spring system at each time $t$ during a simulation. All these
+variables are initialized in step 1.
 
-The total force of a spring is the sum of the
-spring force $F_{h,d}$ calculated by using Hooke's Law and the damping force
-$F_{C,d}$ using a simple damping method [TODO: Add reference (wiki):
-\url{http://en.wikipedia.org/wiki/Harmonic_oscillator}]:
-\begin{align}
-    \nonumber l_d &= p_{l,d} - p_{r,d} \\
-    \label{eq:hooke}
-    F_{h,d} &= -k_d x_d = -k_d (l_d - l_{0,d}) \\
-    \label{eq:damping}
-    F_{C,d} &= -C_d \frac{\partial x_d}{ \partial t} = - C_d
-        \frac{\left(v_{l,d} - v_{r,d}\right) l_d}{\abs{l_d}} \\
-    F_d &= F_{h,d} + F_{C,d}
-\end{align}
-[TODO: Maybe add direction correction: $F_d \cdot (-l_d / \abs{l_d})$]
-in which $p_{l,d}$ and $p_{r,d}$ are the positions of the left and right
-endpoints of the spring $d$ respectively, and $v_{l,d}$ and $v_{r,d}$ are
-the velocities of the left and right endpoint vertices of the spring $d$
-respectively, and $F_d$ is the total force of spring $d$.
+The total force of a spring is the sum of the spring force $F_{h,d}$
+calculated by using Hooke's Law and the damping force $F_{C,d}$
+using a simple damping method [TODO: Add reference (wiki):
+\url{http://en.wikipedia.org/wiki/Harmonic_oscillator}]: \begin{align}
+\nonumber l_d &= p_{l,d} - p_{r,d} \\ \label{eq:hooke} F_{h,d} &= -k_d x_d
+= -k_d (l_d - l_{0,d}) \\ \label{eq:damping} F_{C,d} &= -C_d \frac{\partial
+x_d}{ \partial t} = - C_d \frac{\left(v_{l,d} - v_{r,d}\right) l_d}{\abs{l_d}}
+\\ F_d &= F_{h,d} + F_{C,d} \end{align} [TODO: Maybe add direction correction:
+$F_d \cdot (-l_d / \abs{l_d})$] in which $p_{l,d}$ and $p_{r,d}$ are the
+positions of the left and right endpoints of the spring $d$ respectively, and
+$v_{l,d}$ and $v_{r,d}$ are the velocities of the left and right endpoint
+vertices of the spring $d$ respectively, and $F_d$ is the total force of
+spring $d$.
 
 When calculating the forces applied by each spring, we add the total spring
-force $F_d$ to the left endpoint of the spring and subtract $F_d$ from the right
-endpoint since both endpoints are affected equally in opposite direction by the
-spring $d$ connecting them. These spring forces are calculated in step 2 of the
-simulation.
+force $F_d$ to the left endpoint of the spring and subtract $F_d$ from the
+right endpoint since both endpoints are affected equally in opposite direction
+by the spring $d$ connecting them. These spring forces are calculated in step
+2 of the simulation.
 
-We now know how to calculate the force of the spring system and apply
-it to the vertices. In order to calculate the derrivatives of the
-system (step 3) we use Newton's second law of motion [TODO: Add reference,
+We now know how to calculate the force of the spring system and apply it
+to the vertices. In order to calculate the derrivatives of the system
+(step 3) we use Newton's second law of motion [TODO: Add reference,
 \url{http://en.wikipedia.org/wiki/Newton's_laws_of_motion}] to get the
-difference in speed $\Delta u_v$ and position $\Delta p_v$ of each vertex $v$ using
-a given time step size $\Delta t$:
-\begin{align}
-    \label{eq:delta_u}
-    \Delta u_v &= \frac{\partial u_v}{\partial t} \Delta t = \frac{F_v}{m_v}
-    \Delta t \\
-    \label{eq:delta_p}
-    \Delta p_v &= u \Delta t
-\end{align}
+difference in speed $\Delta u_v$ and position $\Delta p_v$ of each vertex $v$
+using a given time step size $\Delta t$: \begin{align} \label{eq:delta_u}
+\Delta u_v &= \frac{\partial u_v}{\partial t} \Delta t = \frac{F_v}{m_v}
+\Delta t \\ \label{eq:delta_p} \Delta p_v &= u \Delta t \end{align}
 
 As mentioned in the beginning of this section we have chosen to use the
 explicit Euler method defined below in equation \ref{eq:explicit_euler}
 to calculate the time ``integration'' [TODO: Add reference,
-\url{http://en.wikipedia.org/wiki/Euler_method}] when stepping through the
-simulation. Given a variable $x$ as a function of the time $t$, the variable $x$
-at the time $t + \Delta t$ is defined as:
-\begin{align}
-    \label{eq:explicit_euler}
-    x(t+\Delta t) &= x(t) + \Delta t \frac{\partial x(t)}{\partial t}
-\end{align}
-Applying this method for the timestepping of our simulation we get the two
-following position and velocity update equations using equations
-\ref{eq:delta_u} and \ref{eq:delta_p}:
-\begin{align}
-    p_v(t+\Delta t) &= p_v(t) + \Delta p_v \\
-    u_v(t+\Delta t) &= u_v(t) + \Delta u_v
-\end{align}
-We use these equations to perform step 4 of the simulation.
+\url{http://en.wikipedia.org/wiki/Euler_method}] when stepping through
+the simulation. Given a variable $x$ as a function of the time $t$, the
+variable $x$ at the time $t + \Delta t$ is defined as: \begin{align}
+\label{eq:explicit_euler} x(t+\Delta t) &= x(t) + \Delta t \frac{\partial
+x(t)}{\partial t} \end{align} Applying this method for the timestepping
+of our simulation we get the two following position and velocity update
+equations using equations \ref{eq:delta_u} and \ref{eq:delta_p}: \begin{align}
+p_v(t+\Delta t) &= p_v(t) + \Delta p_v \\ u_v(t+\Delta t) &= u_v(t) + \Delta
+u_v \end{align} We use these equations to perform step 4 of the simulation.
 
 Step 5 is a simple update of the time: $t = t + \Delta t$ and step 6 describes
 itself.
@@ -275,28 +258,76 @@ using the explicit Euler method and the next subsections describe the three
 different methods/modifications for applying LAOTS to the simulation just
 described.
 
+\subsection{Adapt-on-switch}
+The first LAOT method we propose is time-adaptive. We perform a simulation
+with an initial timestep size. In each step we try to predict whether a timestep
+of the same size using the current velocities will result in a switch of the
+left and right vertices of any of the springs. If this is the case, we should
+try to avoid the switch by decreasing the timestep of the current iteration,
+re-calculate the velocity and position changes and resume stepping of the
+simulation using the new timestep size. When switches aren't detected anymore
+we gradually increase the timestep of the simulation again. We call this
+method the adapt-on-switch method.
 
-\subsection{Switch}
-Change timestep when detecting collision/switch in next iteration
+The switch of two endspoints connected by a spring $d$ can easily be
+calculated by checking the length ($p_{l,d} - p_{r,d}$) of the spring before
+and after a position update. If the sign of the length differs, the two
+points must have switched sides and hence adaption of the timestep should be
+performed. The adaption of the timestep can either be done by division of the
+current timestep by a constant or by having a finite set of timestep sizes to
+choose from.
 
-\subsection{Spatial LAOTS}
-Atomic update
+\subsection{Atomic updating using heuristics}
+The second LAOT method we propose is space-adaptive. We perform simulations
+using a fixed timestep size. In each iteration we perform position update of
+all vertices, but only re-calculate acceleration and velocity of the springs
+and points that fulfill one of the defined heuristics. The heuristics can be
+chosen to fit the domain of the simulation, but we have chosen to use the
+number of steps since last update and the ratio between the current spring
+length and the spring length at the last update. This should force a bound on
+the maximal timestep before update as well as making sure updates are done
+more frequently in case the springlength is changing more rapidly. Further
+details are explained in section \ref{sec:experiments}.
 
-Fixed update rate and detection of need for re-calculation of individual springs
+\subsection{Global estimated acceleration}
+The third and last LAOT method we propose is time-adaptive. The simulations are
+done using an initial timestep size. We know that the force and hence
+acceleration of a spring is somewhat linear close to the spring's rest length
+and it ``bends'' off as the spring is streched or contracted further away from
+the rest length. Based on this knowledge we will try to make a heuristic
+telling us about the needed timestep size at any given point during the
+simulation. The smallest needed timestep defines the global timestep for that
+given step.
 
-Heuristic: Length of spring, steps since last update
-
-\subsection{Inverse}
-Time-local optimization according to heuristic:
-
+For this simple 1D example we use the inverse of the acceleration
+for adapting the timestep and hence the heuristic is defined as:
 \begin{align}
     \frac{1}{a} &= \frac{1}{\frac{-kx}{m}} = \frac{m}{-kx} \\
-    \Delta t &= \abs{\frac{1}{a}} + \frac{1}{0.1}
+    \Delta t &= \text{min}\left( \frac{1}{\abs{a} + 0.1} \right )
 \end{align}
+We have added a small value (0.1) in order to avoid the timestep to increase
+exponentially towards infinity as $\abs{a}$ approach 0. Furthermore a scaling of the timestep
+could be needed depending on the scale of the simulation mesh. Further details
+are explained in section \ref{sec:experiments}.
+
+Our though is that for some more
+complex simulations we are able to make estimates of this type less costly than
+performing the actual simulations of a small fixed size timestep.
 
 %------------------------------------------------
 
 \section{Experiments and results}
+\label{sec:experiments}
+
+Show results for:
+
+\begin{itemize}
+    \item Normal simulation
+    \item Switch
+    \item Atomic
+    \item Inverse
+\end{itemize}
+
 
 Examples of
 
