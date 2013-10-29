@@ -1,8 +1,10 @@
-function [positions, lengths, times, switches, active] = springSim(fps, t_stop, stepBound, rFactor)
+function [positions, lengths, times, switches, active] = springSim(fps, t_stop, stepBound, rFactor, pP)
     %% Initialize particles
-    % Create grid of particles at positions
-    %pP = [-2:0.5:1.99, 2:0.15:2.99, 3:0.5:6.99]';
-    pP = [-2:2:2]';
+    if nargin < 5
+        % Create grid of particles at positions
+        %pP = [-2:0.5:1.99, 2:0.15:2.99, 3:0.5:6.99]';
+        pP = [-2:2:2]';
+    end
 
     % Initialize variables
     cntP = size(pP,1);
