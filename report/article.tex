@@ -370,15 +370,35 @@ testing all three LAOTS methods proposed in section \ref{sec:methods}.
 \subsection{Adapt-on-switch}
 Special things to note: How subdivision is done: new fixed (30) or relative (dt / 10)
 new fixed: We don't catch it early enough. Maybe something with the explicit
-euler, maybe something with the linear model
+euler, maybe something with the linear model. We should catch the error before
+it escalates into a state in which we cannot rescue it anymore.
 
 Relative: We get too fine-grained - maybe related to the above
+\begin{figure}[H]
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/switch_multiscale_1fps_relative.png}
+        \caption{Relative timestepping ($\Delta t = \frac{\Delta t}{100}$)}
+        \label{fig:switch_multi_1fps_relative}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/switch_multiscale_1fps_absolute.png}
+        \caption{Absolute timestepping ($\Delta t = \frac{1}{30}$)}
+        \label{fig:switch_multi_1fps_absolute}
+    \end{subfigure}
+    \caption{Adapt-on-switch simulation of particles distributed with two
+    scales using 1 fps}
+\end{figure}
 
 \subsection{Atomic updating using heuristics}
 
 Heuristic: steps since last update and ratio of length since last update
 
+interpolation of positions makes the integration more stable since the stepping
+is based on a point closer in time
+
 \subsection{Global estimated acceleration}
+
+The heuristic dampens the system
 
 
 %Examples of
