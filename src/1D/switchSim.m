@@ -70,7 +70,6 @@ function [positions, lengths, times, switches] = switchSim(fps_lowest, t_stop)
     pF = zeros(cntP,2);
     while time <= t_stop + dt/2;
         p_last = pP;
-        pP = pP + pV * dt;
 
         % Check for subdivision
         if dt < dt_base && size(pSub,1) > 0
@@ -109,6 +108,7 @@ function [positions, lengths, times, switches] = switchSim(fps_lowest, t_stop)
         times(end+1) = time;
 
         % Subdivide
+        pP = pP + dp;
         pV = pV + dv;
 
         % Time update
