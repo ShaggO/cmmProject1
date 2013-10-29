@@ -212,18 +212,17 @@ of the mass-spring system at each time $t$ during a simulation. All these
 variables are initialized in step 1.
 
 The total force of a spring is the sum of the spring force $F_{h,d}$
-calculated by using Hooke's Law and the damping force $F_{C,d}$
-using a simple damping method \todo{Add reference (wiki):
-    \url{http://en.wikipedia.org/wiki/Harmonic_oscillator}}: \begin{align}
-\nonumber l_d &= p_{l,d} - p_{r,d} \\ \label{eq:hooke} F_{h,d} &= -k_d x_d
-= -k_d (l_d - l_{0,d}) \\ \label{eq:damping} F_{C,d} &= -C_d \frac{\partial
-x_d}{ \partial t} = - C_d \frac{\left(v_{l,d} - v_{r,d}\right) l_d}{\abs{l_d}}
-\\ F_d &= F_{h,d} + F_{C,d} \end{align} \todo{Maybe add direction correction:
-    $F_d \cdot (-l_d / \abs{l_d})$} in which $p_{l,d}$ and $p_{r,d}$ are the
-positions of the left and right endpoints of the spring $d$ respectively, and
-$v_{l,d}$ and $v_{r,d}$ are the velocities of the left and right endpoint
-vertices of the spring $d$ respectively, and $F_d$ is the total force of
-spring $d$.
+calculated by using Hooke's Law (see \cite[p.~439]{Young:2010})
+and the damping force $F_{C,d}$ using a simple damping method (see
+\cite[p.~457]{Young:2010}): \begin{align} \nonumber l_d &= p_{l,d} -
+p_{r,d} \\ \label{eq:hooke} F_{h,d} &= -k_d x_d = -k_d (l_d - l_{0,d}) \\
+\label{eq:damping} F_{C,d} &= -C_d \frac{\partial x_d}{ \partial t} = - C_d
+\frac{\left(v_{l,d} - v_{r,d}\right) l_d}{\abs{l_d}} \\ F_d &= F_{h,d} +
+F_{C,d} \end{align} \todo{Maybe add direction correction: $F_d \cdot (-l_d
+/ \abs{l_d})$} in which $p_{l,d}$ and $p_{r,d}$ are the positions of the
+left and right endpoints of the spring $d$ respectively, and $v_{l,d}$ and
+$v_{r,d}$ are the velocities of the left and right endpoint vertices of the
+spring $d$ respectively, and $F_d$ is the total force of spring $d$.
 
 When calculating the forces applied by each spring, we add the total spring
 force $F_d$ to the left endpoint of the spring and subtract $F_d$ from the
@@ -231,19 +230,17 @@ right endpoint since both endpoints are affected equally in opposite direction
 by the spring $d$ connecting them. These spring forces are calculated in step
 2 of the simulation.
 
-We now know how to calculate the force of the spring system and apply it
-to the vertices. In order to calculate the derrivatives of the system
-(step 3) we use Newton's second law of motion \todo{Add reference,
-    \url{http://en.wikipedia.org/wiki/Newton's_laws_of_motion}} to get the
-difference in speed $\Delta u_v$ and position $\Delta p_v$ of each vertex $v$
-using a given time step size $\Delta t$: \begin{align} \label{eq:delta_u}
+We now know how to calculate the force of the spring system and apply it to
+the vertices. In order to calculate the derrivatives of the system (step 3) we
+use Newton's second law of motion (see \cite[p.~112-115]{Young:2010}) to get
+the difference in speed $\Delta u_v$ and position $\Delta p_v$ of each vertex
+$v$ using a given time step size $\Delta t$: \begin{align} \label{eq:delta_u}
 \Delta u_v &= \frac{\partial u_v}{\partial t} \Delta t = \frac{F_v}{m_v}
 \Delta t \\ \label{eq:delta_p} \Delta p_v &= u \Delta t \end{align}
 
 As mentioned in the beginning of this section we have chosen to use the
 explicit Euler method defined below in equation \ref{eq:explicit_euler}
-to calculate the time ``integration'' \todo{Add reference,
-    \url{http://en.wikipedia.org/wiki/Euler_method}} when stepping through
+to calculate the time ``integration'' \cite{Flaherty} when stepping through
 the simulation. Given a variable $x$ as a function of the time $t$, the
 variable $x$ at the time $t + \Delta t$ is defined as: \begin{align}
 \label{eq:explicit_euler} x(t+\Delta t) &= x(t) + \Delta t \frac{\partial
