@@ -1,9 +1,7 @@
-function [positions, lengths, times, switches] = springSim(fps_lowest, t_stop, pP)
+function [positions, lengths, times, switches] = switchSim(fps_lowest, t_stop)
     % Create grid of particles at positions
-    if nargin < 3
-        pP = [-2:0.5:1.99, 2:0.15:2.99, 3:0.5:6.99]';
-        %pP = [-2:1:2];
-    end
+    pP = [-2:0.5:1.99, 2:0.15:2.99, 3:0.5:6.99]';
+    %pP = [-2:1:2];
     if size(pP,2) > size(pP,1)
         pP = pP';
     end
@@ -31,7 +29,7 @@ function [positions, lengths, times, switches] = springSim(fps_lowest, t_stop, p
     spC = ones(cntS,1) * 0.5;   % Damping
     spK = ones(cntS,1) * 0.5;   % Stiffness
     spX0 = pP(sp);
-    spX0 = abs(spX0(:,1) - spX0(:,2)) * 0.8;
+    spX0 = abs(spX0(:,1) - spX0(:,2)) * 0.785;
 
     distance_show = false;
     momentum_show = false;
@@ -71,19 +69,46 @@ function [positions, lengths, times, switches] = springSim(fps_lowest, t_stop, p
     dx = zeros(cntS,1);
     pF = zeros(cntP,2);
     while time <= t_stop + dt/2;
+        p_last = pP;
+        pP = pP + pV * dt;
+
+        % Check for subdivision
+        if dt < dt_base && size(pSub,1) > 0
+
+            % Find springs to re-calculate force for
+            springs = sp(ismember(sp,pSub));
+        end
+
         % Force calculation
         [pF dx] = springForces(pP, sp, pV, spK, spX0, spC);
 
-        % Position and velocity update values
+        % Position and velocity update
         [dp dv] = springStep(pP, pM, pV, sum(pF,2), dt);
+
+        % Detect collisions / switches in position
+        l = springLength(p_last, sp);
+        l2 = springLength(pP + dp, sp);
+        mask = l .* l2 < 0;
+        if any(mask)
+%            dt = dt/10;
+            dt = 1/30;
+            disp('Switch in next iteration!');
+            pSub = sp(mask,:);
+            cnt = size(pSub,1);
+            switches(end+1:end+cnt,:) = [repmat(time,[cnt 1]), pSub];
+%            dt = dt/10;
+%            pV(pSub) = 0;
+            [pF dx] = springForces(pP, sp, pV, spK, spX0, spC);
+
+            [dp dv] = springStep(pP, pM, pV, sum(pF,2), dt);
+        end
 
         % Registration
         positions(:,end+1) = pP;
         lengths(:,end+1) = -dx;
         times(end+1) = time;
 
-        % Update position and velocity of simulation
-        pP = pP + dp;
+        % Subdivide
         pV = pV + dv;
 
         % Time update

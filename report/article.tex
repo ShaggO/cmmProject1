@@ -18,9 +18,7 @@
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
-\documentclass[twoside]{article}
-
-\usepackage{lipsum} % Package to generate dummy text throughout this template
+\documentclass[11pt]{article}
 
 \usepackage[sc]{mathpazo} % Use the Palatino font
 \usepackage[utf8]{inputenc}
@@ -28,18 +26,19 @@
 \linespread{1.05} % Line spacing - Palatino needs more space between lines
 \usepackage{microtype} % Slightly tweak font spacing for aesthetics
 
-\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
-\usepackage{multicol} % Used for the two-column layout of the document
+%\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+%\usepackage{multicol} % Used for the two-column layout of the document
 \usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
 \usepackage{booktabs} % Horizontal rules in tables
 \usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
 \usepackage[hidelinks]{hyperref} % For hyperlinks in the PDF
 
 \usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
-\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+%\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
 
 \usepackage{todonotes}
 \usepackage{amsmath,amssymb,amsfonts}
+\usepackage{subcaption}
 \providecommand{\abs}[1]{\left \lvert #1 \right \rvert}
 
 \usepackage{abstract} % Allows abstract customization
@@ -97,15 +96,16 @@ helping me realize this project}\\[2mm] % Your name
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
 
-\begin{multicols}{2} % Two-column layout throughout the main article text
+%\begin{multicols}{2} % Two-column layout throughout the main article text
 
 \section{Introduction}
 \lettrine[nindent=0em,lines=3]{S} imulations of large hyperelastic materials
 can be very time consuming. When working with materials of varying density
 of vertices/scale of mesh, the highest densities often give the most
 strict bounds on size of the time step of the simulation in order to keep
-the materials (and grids) stable and the discretization correct. In a
-``standard'' simulation with a global time step size we need to compute
+the materials (and grids) stable and the discretization correct.
+
+In a ``standard'' simulation with a global time step size we need to compute
 possibly unnecessarily many computations on the coarser parts of the material
 caused by this bound. When furthermore having materials with a large amount
 of somewhat equally distributed vertices and smaller patches of detailed
@@ -115,7 +115,9 @@ parts) and smaller steps for the local patches where vertices could cause
 instability. We call the concept of varying the timestep local adaptive
 optimization of time step (LAOTS), in which ``local'' either refers to spatial
 locality (as described above) or time locality where the time step is global
-for all vertices but varies during the simulation. We will in this report
+for all vertices but varies during the simulation.
+
+We will in this report
 study possible approaches for application of LAOTS. In order to keep the focus
 on possible LAOTS methods and remove unneccessary complexities, we will study
 the simple 1 dimensional simulation of a mass-spring system and try to apply
@@ -170,6 +172,7 @@ to increase the time step as well without violating the stability condition.
 %------------------------------------------------
 
 \section{Methods}
+\label{sec:methods}
 
 With no prerequisites within the field of mass simulations we will first
 consider the 1D problem of simulating a mass-spring system using the explicit
@@ -193,10 +196,10 @@ to get to the final simulation state by using as big timesteps as possible
 without affecting the outcome of the simulation.
 
 When simulating the mass-spring system we perform the following steps:
-\begin{compactenum} \item Initialize system \item Calculate forces \item
+\begin{enumerate} \item Initialize system \item Calculate forces \item
 Calculate derrivatives \item Update positions and velocities \item Update time
 \item Go to step 2 if the simulation has not reached it's maximum simulation
-time. \end{compactenum} We now describe the details of each of the steps of
+time. \end{enumerate} We now describe the details of each of the steps of
 the simulation.
 
 Our 1D mass-spring system consists of a set $V$ of vertices and a set
@@ -210,13 +213,13 @@ variables are initialized in step 1.
 
 The total force of a spring is the sum of the spring force $F_{h,d}$
 calculated by using Hooke's Law and the damping force $F_{C,d}$
-using a simple damping method [TODO: Add reference (wiki):
-\url{http://en.wikipedia.org/wiki/Harmonic_oscillator}]: \begin{align}
+using a simple damping method \todo{Add reference (wiki):
+    \url{http://en.wikipedia.org/wiki/Harmonic_oscillator}}: \begin{align}
 \nonumber l_d &= p_{l,d} - p_{r,d} \\ \label{eq:hooke} F_{h,d} &= -k_d x_d
 = -k_d (l_d - l_{0,d}) \\ \label{eq:damping} F_{C,d} &= -C_d \frac{\partial
 x_d}{ \partial t} = - C_d \frac{\left(v_{l,d} - v_{r,d}\right) l_d}{\abs{l_d}}
-\\ F_d &= F_{h,d} + F_{C,d} \end{align} [TODO: Maybe add direction correction:
-$F_d \cdot (-l_d / \abs{l_d})$] in which $p_{l,d}$ and $p_{r,d}$ are the
+\\ F_d &= F_{h,d} + F_{C,d} \end{align} \todo{Maybe add direction correction:
+    $F_d \cdot (-l_d / \abs{l_d})$} in which $p_{l,d}$ and $p_{r,d}$ are the
 positions of the left and right endpoints of the spring $d$ respectively, and
 $v_{l,d}$ and $v_{r,d}$ are the velocities of the left and right endpoint
 vertices of the spring $d$ respectively, and $F_d$ is the total force of
@@ -230,8 +233,8 @@ by the spring $d$ connecting them. These spring forces are calculated in step
 
 We now know how to calculate the force of the spring system and apply it
 to the vertices. In order to calculate the derrivatives of the system
-(step 3) we use Newton's second law of motion [TODO: Add reference,
-\url{http://en.wikipedia.org/wiki/Newton's_laws_of_motion}] to get the
+(step 3) we use Newton's second law of motion \todo{Add reference,
+    \url{http://en.wikipedia.org/wiki/Newton's_laws_of_motion}} to get the
 difference in speed $\Delta u_v$ and position $\Delta p_v$ of each vertex $v$
 using a given time step size $\Delta t$: \begin{align} \label{eq:delta_u}
 \Delta u_v &= \frac{\partial u_v}{\partial t} \Delta t = \frac{F_v}{m_v}
@@ -239,8 +242,8 @@ using a given time step size $\Delta t$: \begin{align} \label{eq:delta_u}
 
 As mentioned in the beginning of this section we have chosen to use the
 explicit Euler method defined below in equation \ref{eq:explicit_euler}
-to calculate the time ``integration'' [TODO: Add reference,
-\url{http://en.wikipedia.org/wiki/Euler_method}] when stepping through
+to calculate the time ``integration'' \todo{Add reference,
+    \url{http://en.wikipedia.org/wiki/Euler_method}} when stepping through
 the simulation. Given a variable $x$ as a function of the time $t$, the
 variable $x$ at the time $t + \Delta t$ is defined as: \begin{align}
 \label{eq:explicit_euler} x(t+\Delta t) &= x(t) + \Delta t \frac{\partial
@@ -281,13 +284,14 @@ choose from.
 The second LAOT method we propose is space-adaptive. We perform simulations
 using a fixed timestep size. In each iteration we perform position update of
 all vertices, but only re-calculate acceleration and velocity of the springs
-and points that fulfill one of the defined heuristics. The heuristics can be
-chosen to fit the domain of the simulation, but we have chosen to use the
-number of steps since last update and the ratio between the current spring
-length and the spring length at the last update. This should force a bound on
-the maximal timestep before update as well as making sure updates are done
-more frequently in case the springlength is changing more rapidly. Further
-details are explained in section \ref{sec:experiments}.
+and points that fulfill some defined heuristics.
+
+The heuristics can be chosen to fit the domain of the simulation, but we have
+chosen to use the number of steps since last update and the ratio between the
+current spring length and the spring length at the last update. This should
+force a bound on the maximal timestep before update as well as making sure
+updates are done more frequently in case the springlength is changing more
+rapidly. Further details are explained in section \ref{sec:experiments}.
 
 \subsection{Global estimated acceleration}
 The third and last LAOT method we propose is time-adaptive. The simulations are
@@ -306,9 +310,9 @@ for adapting the timestep and hence the heuristic is defined as:
     \Delta t &= \text{min}\left( \frac{1}{\abs{a} + 0.1} \right )
 \end{align}
 We have added a small value (0.1) in order to avoid the timestep to increase
-exponentially towards infinity as $\abs{a}$ approach 0. Furthermore a scaling of the timestep
-could be needed depending on the scale of the simulation mesh. Further details
-are explained in section \ref{sec:experiments}.
+exponentially towards infinity as $\abs{a}$ approach 0. Furthermore a scaling
+of the timestep could be needed depending on the scale of the simulation mesh.
+Further details are explained in section \ref{sec:experiments}.
 
 Our though is that for some more
 complex simulations we are able to make estimates of this type less costly than
@@ -319,18 +323,69 @@ performing the actual simulations of a small fixed size timestep.
 \section{Experiments and results}
 \label{sec:experiments}
 
-Show results for:
+We first give an example of the actual application of LAOTS using the standard
+simulation of mass spring particles. Figure \ref{fig:std} shows two simulations
+of the same set of particles distributed with two different scales simulated for
+500 seconds each. All the springs $s \in S$ are initiated in a stretched state/position
+with a length 1.25 times longer than the rest length, damping and stiffness
+constants $C_s = 0.5, K_s = 0.5$, and all vertices $v \in V$
+have a mass of $m_v = 30$.
+\ref{fig:std_multi_30fps} shows a simulation using 30 fps and Figure
+\ref{fig:std_multi_1fps} shows a simulation using 1 fps. We clearly see that
+using a timestep of 30 fps the simulation is stable and able to handle the
+compression of all the small springs around $t = 110$ whereas a switch occurs
+when simulating at 1 fps. This switch causes ripples of sideeffects for the rest
+of the simulation and hence the final result is incorrect. No switches of the longer springs are however occuring and hence these pose no problem at 1 fps. We will use this simulation for
+testing all three LAOTS methods proposed in section \ref{sec:methods}.
 
-\begin{itemize}
-    \item Normal simulation
-    \item Switch
-    \item Atomic
-    \item Inverse
-\end{itemize}
+\begin{figure}[H]
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/standard_multiscale_30fps.png}
+        \caption{30 fps}
+        \label{fig:std_multi_30fps}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/standard_multiscale_1fps.png}
+        \caption{1 fps}
+        \label{fig:std_multi_1fps}
+    \end{subfigure}
+    \caption{Standard simulations of particles distributed with two scales using
+    different timestep sizes}
+    \label{fig:std}
+\end{figure}
+
+\todo{Write something about the explicit euler based on uniform}
+\begin{figure}[H]
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/standard_uniform_30fps.png}
+        \caption{30 fps}
+        \label{fig:std_uni_30fps}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/standard_uniform_1fps.png}
+        \caption{1 fps}
+        \label{fig:std_uni_1fps}
+    \end{subfigure}
+    \caption{Standard simulations of particles distributed uniformly using
+    different timestep sizes}
+\end{figure}
+
+\subsection{Adapt-on-switch}
+Special things to note: How subdivision is done: new fixed (30) or relative (dt / 10)
+new fixed: We don't catch it early enough. Maybe something with the explicit
+euler, maybe something with the linear model
+
+Relative: We get too fine-grained - maybe related to the above
+
+\subsection{Atomic updating using heuristics}
+
+Heuristic: steps since last update and ratio of length since last update
+
+\subsection{Global estimated acceleration}
 
 
-Examples of
-
+%Examples of
+%
 %\begin{table}[H]
 %\caption{Example table}
 %\centering
@@ -364,6 +419,5 @@ Relate to hyperelastic materials (some linear heuristic = win)
 
 %----------------------------------------------------------------------------------------
 
-\end{multicols}
 
 \end{document}
