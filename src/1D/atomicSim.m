@@ -1,9 +1,18 @@
-function [positions, lengths, times, switches, active] = springSim(fps, t_stop, stepBound, rFactor, pP)
+function [positions, lengths, times, switches, active] = atomicSim(fps, t_stop, stepBound, rFactor, pP, x0factor, dFactor, sFactor)
     %% Initialize particles
     if nargin < 5
         % Create grid of particles at positions
         %pP = [-2:0.5:1.99, 2:0.15:2.99, 3:0.5:6.99]';
         pP = [-2:2:2]';
+    end
+    if nargin < 6
+        x0factor = 0.6;
+    end
+    if nargin < 7
+        dFactor = 0.01;
+    end
+    if nargin < 8
+        sFactor = 0.5;
     end
 
     % Initialize variables
@@ -26,10 +35,10 @@ function [positions, lengths, times, switches, active] = springSim(fps, t_stop, 
     cntS = size(sp,1);
 
     % Set up initial measurements for each spring
-    spC = ones(cntS,1) * 0.01;   % Damping
-    spK = ones(cntS,1) * 0.5;   % Stiffness
+    spC = ones(cntS,1) * dFactor;   % Damping
+    spK = ones(cntS,1) * sFactor;   % Stiffness
     spX0 = pP(sp);
-    spX0 = abs(spX0(:,1) - spX0(:,2)) * 0.6;
+    spX0 = abs(spX0(:,1) - spX0(:,2)) * x0factor;
     spL = springLength(pP,sp);  % Length at last update
     spSteps = zeros(cntS,1);    % Number of steps since last update
 
@@ -56,6 +65,7 @@ function [positions, lengths, times, switches, active] = springSim(fps, t_stop, 
 
         % Position and velocity update
         [dp dv] = springStep(pP, pM, pV, sum(pF,2), dt, pA, sp, spSteps);
+
         % Detect collisions / switches in position
         l = springLength(pP + dp, sp);
         l2 = springLength(pP, sp);
@@ -63,9 +73,9 @@ function [positions, lengths, times, switches, active] = springSim(fps, t_stop, 
         if any(mask)
             disp('Switch in next iteration!');
             disp(time);
-            pSub = unique(sp(mask,:));
+            pSub = sp(mask,:);
             cnt = size(pSub,1);
-%            switches(end+1:end+cnt,:) = [repmat(time,[cnt 1]), pSub];
+            switches(end+1:end+cnt,:) = [repmat(time,[cnt 1]), pSub];
         end
 
         % Registration

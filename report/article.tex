@@ -256,9 +256,12 @@ itself.
 We have now fully described the simple case of simulating a mass-spring system
 using the explicit Euler method and the next subsections describe the three
 different methods/modifications for applying LAOTS to the simulation just
-described.
+described. The three methods are using different ideas to implement LOATS. They
+could however possibly be combined in case they turn out to be working as
+intended to achieve the best possible LAOTS scheme.
 
 \subsection{Adapt-on-switch}
+\label{sec:method_switch}
 The first LAOT method we propose is time-adaptive. We perform a simulation
 with an initial timestep size. In each step we try to predict whether a timestep
 of the same size using the current velocities will result in a switch of the
@@ -277,18 +280,20 @@ performed. The adaption of the timestep can either be done by division of the
 current timestep by a constant or by having a finite set of timestep sizes to
 choose from.
 
-\subsection{Atomic updating using heuristics}
+\subsection{Atomic Updating using Heuristics}
 The second LAOT method we propose is space-adaptive. We perform simulations
 using a fixed timestep size. In each iteration we perform position update of
 all vertices, but only re-calculate acceleration and velocity of the springs
-and points that fulfill some defined heuristics.
+and points that fulfill some defined heuristics and hence the method is called
+``Atomic Updating using Heuristics'' (AUH).
 
-The heuristics can be chosen to fit the domain of the simulation, but we have
-chosen to use the number of steps since last update and the ratio between the
-current spring length and the spring length at the last update. This should
-force a bound on the maximal timestep before update as well as making sure
-updates are done more frequently in case the springlength is changing more
-rapidly. Further details are explained in section \ref{sec:experiments}.
+The heuristics can be chosen to fit the domain of the simulation, but we
+have chosen to use the number of steps since last update, $n_{last}$, and
+the ratio between the current spring length and the spring length at the
+last update $r_{last}$. This should force a bound on the maximal timestep
+before update as well as making sure updates are done more frequently in case
+the springlength is changing more rapidly. Further details are explained in
+section \ref{sec:experiments}.
 
 \subsection{Global estimated acceleration}
 The third and last LAOT method we propose is time-adaptive. The simulations are
@@ -331,9 +336,11 @@ have a mass of $m_v = 30$.
 \ref{fig:std_multi_1fps} shows a simulation using 1 fps. We clearly see that
 using a timestep of 30 fps the simulation is stable and able to handle the
 compression of all the small springs around $t = 110$ whereas a switch occurs
-when simulating at 1 fps. This switch causes ripples of sideeffects for the rest
-of the simulation and hence the final result is incorrect. No switches of the longer springs are however occuring and hence these pose no problem at 1 fps. We will use this simulation for
-testing all three LAOTS methods proposed in section \ref{sec:methods}.
+when simulating at 1 fps. This switch causes ripples of sideeffects for the
+rest of the simulation and hence the final result is incorrect. No switches of
+the longer springs are however occuring and hence these pose no problem at 1
+fps. We will use this simulation for testing all three LAOTS methods proposed
+in section \ref{sec:methods}.
 
 \begin{figure}[H]
     \begin{subfigure}{0.5\textwidth}
@@ -351,29 +358,67 @@ testing all three LAOTS methods proposed in section \ref{sec:methods}.
     \label{fig:std}
 \end{figure}
 
-\todo{Write something about the explicit euler based on uniform}
-\begin{figure}[H]
-    \begin{subfigure}{0.5\textwidth}
-        \includegraphics[width=\textwidth]{../images/standard_uniform_30fps.png}
-        \caption{30 fps}
-        \label{fig:std_uni_30fps}
-    \end{subfigure}
-    \begin{subfigure}{0.5\textwidth}
-        \includegraphics[width=\textwidth]{../images/standard_uniform_1fps.png}
-        \caption{1 fps}
-        \label{fig:std_uni_1fps}
-    \end{subfigure}
-    \caption{Standard simulations of particles distributed uniformly using
-    different timestep sizes}
-\end{figure}
+\todo{Write something about the explicit euler based on uniform example}
+%\begin{figure}[H]
+%    \begin{subfigure}{0.5\textwidth}
+%        \includegraphics[width=\textwidth]{../images/standard_uniform_30fps.png}
+%        \caption{30 fps}
+%        \label{fig:std_uni_30fps}
+%    \end{subfigure}
+%    \begin{subfigure}{0.5\textwidth}
+%        \includegraphics[width=\textwidth]{../images/standard_uniform_1fps.png}
+%        \caption{1 fps}
+%        \label{fig:std_uni_1fps}
+%    \end{subfigure}
+%    \caption{Standard simulations of particles distributed uniformly using
+%    different timestep sizes}
+%\end{figure}
 
 \subsection{Adapt-on-switch}
-Special things to note: How subdivision is done: new fixed (30) or relative (dt / 10)
-new fixed: We don't catch it early enough. Maybe something with the explicit
-euler, maybe something with the linear model. We should catch the error before
-it escalates into a state in which we cannot rescue it anymore.
+As mentioned in section \ref{sec:method_switch} the adapt-on-switch method
+can be implemented using either a relative or a absolute adaption of the
+timestep. In our experiments we have tested out both methods defining the
+relative adaption to scale the timestep by a factor of $\frac{1}{100}$ and
+the absolute solution to set the timestep to $\frac{1}{30}$ when switches are
+detected since this generated nice simulations for the standard simulation .
+Furthermore the up-scaling for the relative scheme is set to a factor of 10
+since we wish to avoid running into new switches immediately.
 
-Relative: We get too fine-grained - maybe related to the above
+Figure \ref{fig:switch} shows the result of running simulations
+described earlier at 1 fps using the adapt-on-switch scheme, where
+the red crosses mark timesteps where a switch is predicted in the
+following step and hence the schemes are ``activated''. Figure
+\ref{fig:switch_multi_1fps_relative} is simulated using the relative scheme
+and figure \ref{fig:switch_multi_1fps_absolute} is simulated using the
+absolute scheme. As we clearly see in both figures the schemes fail to correct
+the simulations in spite of the switch prediction. Once the first switch
+occurs the simulation will change behavior and hence the first red cross marks
+the point at which the simulation can be rejected from being correct.
+
+After having made these observations we furthermore tested out a third way of
+creating the scheme by predicting how long a timestep we could take before the
+switch would occur and then divide this steplength by 2 to get a new timestep
+length. This generated infeasibly small timesteps forcing us to stop the
+simulation too early.
+
+Taking these observations into account we can safely say that the
+adapt-on-switch method/scheme is not working for our simulation. This does
+however not mean that the method couldn't work for other domains or other
+refinements of the method. The problem with the scheme is that the prediction
+of switches is done too late in the simulation and hence once we detect
+the switches it's too late to do anything about them given our model of
+the mass-spring system. In order for the scheme to work properly it should
+therefore be modified to be able to perform the detection of switches earlier
+in the simulation.
+
+In the real world the spring force would ``bend'' towards $\pm \infty$ once
+the spring is stretched or contracted too much and hence the linear model that
+we use doesn't suffice when using the adapt-on-switch scheme. Having used a
+more realistic choice of model could possibly have had a positive impact of
+the use of this scheme since this would cause the spring force of the spring
+in question to grow in order to avoid the switch. \todo{Maybe the section
+above should be moved to a discussion section.}
+
 \begin{figure}[H]
     \begin{subfigure}{0.5\textwidth}
         \includegraphics[width=\textwidth]{../images/switch_multiscale_1fps_relative.png}
@@ -386,19 +431,98 @@ Relative: We get too fine-grained - maybe related to the above
         \label{fig:switch_multi_1fps_absolute}
     \end{subfigure}
     \caption{Adapt-on-switch simulation of particles distributed with two
-    scales using 1 fps}
+scales using 1 fps. The red crosses mark times at which the scheme predicts a
+switch in the following iteration.}
+    \label{fig:switch}
 \end{figure}
 
-\subsection{Atomic updating using heuristics}
+\subsection{Atomic Updating using Heuristics}
+The AUH method concists of two heuristics for determining whether an element
+should be updated or not: steps since last update $l_{last}$, and the ratio
+between the spring length in last update and the current length $r_{last}$.
 
-Heuristic: steps since last update and ratio of length since last update
+We first test the method using only the first heuristic which will give
+us synchronized updates of all vertices every $r_{last}$ step. Using the
+same setup as the standard simulation we perform simulations using the AUH
+method with the length ratio heuristic ignored by setting the limit of
+the ratio to infinity. We set the timestep to $\Delta t = \frac{1}{10}$
+(10 fps) and vary $l_{last}$. Figure \ref{fig:atomic_multi_sbound} shows
+the resulting simulations where figures \ref{fig:atomic_multi_10sbound},
+\ref{fig:atomic_multi_68sbound}, and \ref{fig:atomic_multi_69sbound} uses
+an $l_{last}$ of 10, 68, and 69 respectively.
 
-interpolation of positions makes the integration more stable since the stepping
-is based on a point closer in time
+Simulating using 10 fps and $l_{last} = 10$ gives us the same amount
+of velocity updates as the standard simulation using 1 fps (which had
+switches), but gives us a nice and smooth simulation with no problems.
+As can be seen in the figures \ref{fig:atomic_multi_68sbound} and
+\ref{fig:atomic_multi_69sbound} we are able to perform the simulation using
+$l_{last} = 68$ without having switches occuring whereas using $l_{last} =
+69$ results in switches occuring. In other words we are able to perform the
+simulation at 10 fps but with 6.8 seconds between acceleration and velocity
+calculations. This is a result of combining the explicit Euler method with
+the AUH scheme since the scheme simply extrapolates the position at the last
+acceleration and velocity update to a position close in time to the next
+update position and then use this position when updating the acceleration and
+velocity again. Had we chosen an alternative time integration method this
+advantage would most likely have been eliminated and let us perform the larger
+timesteps with the standard simulation.
+
+We now turn our attention towards the second heuristic.
+\todo{Decide on the exact heuristic to display after having talked to Sune.}
+
+\begin{figure}[H]
+    \begin{subfigure}{0.3\textwidth}
+        \includegraphics[width=\textwidth]{../images/atomic_multiscale_10fps_10sbound.png}
+        \caption{$l_{last} = 10$}
+        \label{fig:atomic_multi_10sbound}
+    \end{subfigure}
+    \begin{subfigure}{0.3\textwidth}
+        \includegraphics[width=\textwidth]{../images/atomic_multiscale_10fps_68sbound.png}
+        \caption{$l_{last} = 68$}
+        \label{fig:atomic_multi_68sbound}
+    \end{subfigure}
+    \begin{subfigure}{0.3\textwidth}
+        \includegraphics[width=\textwidth]{../images/atomic_multiscale_10fps_69sbound.png}
+        \caption{$l_{last} = 69$}
+        \label{fig:atomic_multi_69sbound}
+    \end{subfigure}
+    \caption{Simulations using the AUH method at 10 fps with various number of
+    steps since last update. Length heuristic is ignored (set to $\infty$).}
+    \label{fig:atomic_multi_sbound}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/atomic_uniform_10fps_0.png}
+        \caption{}
+        \label{fig:atomic_uniform_10fps_0}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/atomic_uniform_10fps_1.png}
+        \caption{}
+        \label{fig:atomic_uniform_10fps_1}
+    \end{subfigure}
+\end{figure}
+
+
+if ratio then too much dampening caused by lack of updates: Example: Simple with
+3 springs
 
 \subsection{Global estimated acceleration}
 
 The heuristic dampens the system
+\begin{figure}[H]
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/inverse_uniform_10fps_0.png}
+        \caption{}
+        \label{fig:inverse_uniform_10fps_0}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/inverse_uniform_10fps_1.png}
+        \caption{}
+        \label{fig:inverse_uniform_10fps_1}
+    \end{subfigure}
+\end{figure}
 
 
 %Examples of

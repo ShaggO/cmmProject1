@@ -1,5 +1,9 @@
+clear all;
+close all;
+clc;
+
 % Set up simulation parameters
-t_stop = 500;
+t_stop = 250;
 
 %% Uniform plots
 pP = [-2:1:2];
