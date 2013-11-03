@@ -57,7 +57,9 @@ function [positions, lengths, times, switches, active] = atomicSim(fps, t_stop, 
         [pA spA spL spSteps_new] = registerActive(pP, sp, spL, pV, time, dt,...
                                                  rFactor, spSteps, stepBound,...
                                                  spX0);
-        active(end+1) = length(spA);
+        pMask = zeros(1,cntP);
+        pMask(pA) = 1;
+        active(end+1,:) = pMask;
 
         % Force calculation of active springs/particles
         [pF dx] = springForces(pP, sp(spA,:), pV,...

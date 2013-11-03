@@ -23,7 +23,6 @@ axis([0 max(times) min(positions(:)) max(positions(:))]);
 xlabel('Time');
 ylabel('Position');
 title('Adapt-on-switch simulation (1 fps, relative)');
-saveas(fi1, [impath 'switch_multiscale_1fps_relative.png'])
 
 [positions, ~, times, switches] = switchSim(1, t_stop, false, pP);
 fi2 = figure();
@@ -40,4 +39,9 @@ axis([0 max(times) min(positions(:)) max(positions(:))]);
 xlabel('Time');
 ylabel('Position');
 title('Adapt-on-switch simulation (1 fps, absolute)');
-saveas(fi2, [impath 'switch_multiscale_1fps_absolute.png'])
+
+fi = [fi1 fi2];
+set(fi, 'PaperPosition', [-0.2 -0.25 6 5.5]);
+set(fi, 'PaperSize', [5.4 5.2]);
+saveas(fi1, [impath 'switch_multiscale_1fps_relative'],'pdf');
+saveas(fi2, [impath 'switch_multiscale_1fps_absolute'],'pdf');

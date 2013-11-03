@@ -1,4 +1,4 @@
-function [F, dx] = springForces(positions, springs, v, K, x0, C)
+function [F, dx, Fc] = springForces(positions, springs, v, K, x0, C)
     element = false;
     % Initialize internal variables
     cntS = size(springs,1);
@@ -38,13 +38,17 @@ function [F, dx] = springForces(positions, springs, v, K, x0, C)
         dx = springLength(positions, springs);
         l  = abs(dx);
 
-        Fs = K .* (l - x0);                             % Spring force
-        Fs = Fs + C .* (v(from) - v(to)) .* dx ./ l;    % Dampening
-        Fs = Fs .* (-dx ./ l);                          % Direction
+        Fs = -K .* (l - x0);                             % Spring force
+        Fc = -C .* (v(from) - v(to)) .* dx ./ l;
+%        Fs = Fs + C .* (v(from) - v(to)) .* dx ./ l;    % Dampening
+        Ft = Fs + Fc;
+        Ft = Ft .* (-dx ./ l);                          % Direction
 
         % Apply forces to endpoints
-        F(from,1) = F(from,1) + Fs;
-        F(to,2)   = F(to,2) - Fs;
+        F(from,1) = F(from,1) - Ft;
+        F(to,2)   = F(to,2) + Ft;
+        Fc = Fs;
+
 
     end
 

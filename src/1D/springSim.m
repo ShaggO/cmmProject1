@@ -1,8 +1,11 @@
-function [positions, lengths, times, switches] = springSim(fps_lowest, t_stop, pP)
+function [positions, lengths, times, switches, dForces] = springSim(fps_lowest, t_stop, pP, sFactor)
     % Create grid of particles at positions
     if nargin < 3
         pP = [-2:0.5:1.99, 2:0.15:2.99, 3:0.5:6.99]';
         %pP = [-2:1:2];
+    end
+    if nargin < 4
+        sFactor = 0.5;
     end
     if size(pP,2) > size(pP,1)
         pP = pP';
@@ -29,7 +32,7 @@ function [positions, lengths, times, switches] = springSim(fps_lowest, t_stop, p
 
     % Set up initial measurements for each spring
     spC = ones(cntS,1) * 0.5;   % Damping
-    spK = ones(cntS,1) * 0.5;   % Stiffness
+    spK = ones(cntS,1) * sFactor;   % Stiffness
     spX0 = pP(sp);
     spX0 = abs(spX0(:,1) - spX0(:,2)) * 0.8;
 
@@ -62,6 +65,7 @@ function [positions, lengths, times, switches] = springSim(fps_lowest, t_stop, p
     lengths = [];
     times = [];
     switches = [];
+    dForces = [];
 
     % subdivide particles
     pSub = [];
@@ -72,7 +76,7 @@ function [positions, lengths, times, switches] = springSim(fps_lowest, t_stop, p
     pF = zeros(cntP,2);
     while time <= t_stop + dt/2;
         % Force calculation
-        [pF dx] = springForces(pP, sp, pV, spK, spX0, spC);
+        [pF dx Fc] = springForces(pP, sp, pV, spK, spX0, spC);
 
         % Position and velocity update values
         [dp dv] = springStep(pP, pM, pV, sum(pF,2), dt);
@@ -81,6 +85,7 @@ function [positions, lengths, times, switches] = springSim(fps_lowest, t_stop, p
         positions(:,end+1) = pP;
         lengths(:,end+1) = -dx;
         times(end+1) = time;
+        dForces(:,end+1) = Fc;
 
         % Update position and velocity of simulation
         pP = pP + dp;

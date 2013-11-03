@@ -26,7 +26,7 @@
 \linespread{1.05} % Line spacing - Palatino needs more space between lines
 \usepackage{microtype} % Slightly tweak font spacing for aesthetics
 
-%\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+%\usepackage[hmarginratio=1:1,top=32mm]{geometry} % Document margins
 %\usepackage{multicol} % Used for the two-column layout of the document
 \usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
 \usepackage{booktabs} % Horizontal rules in tables
@@ -37,6 +37,7 @@
 %\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
 
 \usepackage{todonotes}
+\usepackage{graphicx}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{subcaption}
 \providecommand{\abs}[1]{\left \lvert #1 \right \rvert}
@@ -100,34 +101,35 @@ helping me realize this project}\\[2mm] % Your name
 
 \section{Introduction}
 \lettrine[nindent=0em,lines=3]{S} imulations of large hyperelastic materials
+such as brain tissue
 can be very time consuming. When working with materials of varying density
 of vertices/scale of mesh, the highest densities often give the most
-strict bounds on size of the time step of the simulation in order to keep
+strict bounds on size of the timestep of the simulation in order to keep
 the materials (and grids) stable and the discretization correct.
 
-In a ``standard'' simulation with a global time step size we need to compute
+In a ``standard'' simulation with a global timestep size we need to compute
 possibly unnecessarily many computations on the coarser parts of the material
 caused by this bound. When furthermore having materials with a large amount
 of somewhat equally distributed vertices and smaller patches of detailed
 areas with higher density of vertices, it would be an advantage to be able
-to perform large time steps for the majority of the material (the coarse
+to perform large timesteps for the majority of the material (the coarse
 parts) and smaller steps for the local patches where vertices could cause
 instability. We call the concept of varying the timestep local adaptive
-optimization of time step (LAOTS), in which ``local'' either refers to spatial
-locality (as described above) or time locality where the time step is global
+optimization of timestep (LAOT), in which ``local'' either refers to spatial
+locality (as described above) or time locality where the timestep is global
 for all vertices but varies during the simulation.
 
 We will in this report
-study possible approaches for application of LAOTS. In order to keep the focus
-on possible LAOTS methods and remove unneccessary complexities, we will study
+study possible approaches for application of LAOT. In order to keep the focus
+on possible LAOT methods and remove unneccessary complexities, we will study
 the simple 1 dimensional simulation of a mass-spring system and try to apply
-LAOTS for it. Afterwards we will shortly discuss the application of our gained
+LAOT for it. Afterwards we will shortly discuss the application of our gained
 knowledge to the domain of hyperelastic material simulation and simulations in
 general.
 
 %------------------------------------------------
 
-\section{Previous work} According to \cite{Gander:2013} local time stepping
+\section{Previous work} According to \cite{Gander:2013} local timestepping
 was first studied in the community of ordinary differential equations (ODE)
 with Rice \cite{rice:1960} developing the split Runge-Kutta methods (multi
 rate Runge-Kutta methods). The concept behind these methods is the splitting
@@ -137,8 +139,8 @@ is chosen as proposed in \cite{Kvaernoe:1999} of either computing the coarser
 part first (``Fastest first strategy'') followed by the finer part or vice
 versa (``Slowest first strategy''). In order to perform these sequential
 computations either interpolation or extrapolation of the first computation
-is performed to compute the second part in each time step. The different
-time step sizes can be adapted to fit the model in each step as well. See
+is performed to compute the second part in each timestep. The different
+timestep sizes can be adapted to fit the model in each step as well. See
 \cite{Kvaernoe:1999} and \cite{Gear:1984} (similar strategy for linear multi
 step methods) for more detailed descriptions of the two strategies.
 
@@ -149,24 +151,24 @@ and (parabolic) heat equations instead of more general applications. We
 will refrain from describing the methods further in this report, but a
 short description and comparison of the specific methods can be found in
 \cite{Gander:2013}. Generally the methods developed at first all make use
-of the same basic concepts for making the local adaptive time stepping:
+of the same basic concepts for making the local adaptive timestepping:
 Interpolation, extrapolation, prediction and correction, which we are going to
 use in the work of this report as well.
 
-Recently newer and faster methods with local time stepping have been developed
+Recently newer and faster methods with local timestepping have been developed
 on the basis of nonlinear PDEs and the work performed in this field in
 the 80s and 90s. First the multi resolution (MR) schemes for creating
 space-adaptive discretizations and refinements of these were developed, see
 \cite{Berger:1984}. Then multiple MR based schemes were developed. Domingues
 et al. \cite{Domingues:2008} is one of the more recent of these MR schemes.
-They describe a local scale-dependent time stepping for a space-adaptive multi
+They describe a local scale-dependent timestepping for a space-adaptive multi
 resolution scheme using the finite volume method in order to obtain speed-up
 using larger time-steps without violating a defined stability constraints,
 which is essentially the same motivation as this report. The method is based
-on an explicit Runge-Kutta method of second order. As expected the time step
+on an explicit Runge-Kutta method of second order. As expected the timestep
 size is imposed by a stability condition of the explicit Runge-Kutta on the
 finest scale, which increases with the scale of the mesh and hence we are able
-to increase the time step as well without violating the stability condition.
+to increase the timestep as well without violating the stability condition.
 
 
 %------------------------------------------------
@@ -178,11 +180,11 @@ With no prerequisites within the field of mass simulations we will first
 consider the 1D problem of simulating a mass-spring system using the explicit
 (forward) Euler method.
 
-Second we will propose and test out three different methods for applying LAOTS
+Second we will propose and test out three different methods for applying LAOT
 to the simulation.
 
 Third and last we will discussion the results and how we could apply our
-knowledge of LAOTS for hyperelastic material.
+knowledge of LAOT for hyperelastic material.
 
 \subsection{1D mass-spring system} Mass-spring systems are systems simulating
 a set of vertices interconnected by springs in various ways to obtain
@@ -234,7 +236,7 @@ We now know how to calculate the force of the spring system and apply it to
 the vertices. In order to calculate the derrivatives of the system (step 3) we
 use Newton's second law of motion (see \cite[p.~112-115]{Young:2010}) to get
 the difference in speed $\Delta u_v$ and position $\Delta p_v$ of each vertex
-$v$ using a given time step size $\Delta t$: \begin{align} \label{eq:delta_u}
+$v$ using a given timestep size $\Delta t$: \begin{align} \label{eq:delta_u}
 \Delta u_v &= \frac{\partial u_v}{\partial t} \Delta t = \frac{F_v}{m_v}
 \Delta t \\ \label{eq:delta_p} \Delta p_v &= u \Delta t \end{align}
 
@@ -255,10 +257,14 @@ itself.
 
 We have now fully described the simple case of simulating a mass-spring system
 using the explicit Euler method and the next subsections describe the three
-different methods/modifications for applying LAOTS to the simulation just
-described. The three methods are using different ideas to implement LOATS. They
-could however possibly be combined in case they turn out to be working as
-intended to achieve the best possible LAOTS scheme.
+different methods/modifications for applying LAOT to the simulation just
+described. The three methods are using different ideas to implement LAOT. They
+all include using some sort of heuristics in order to perform the adaption of
+the methods. We developed and tested these heuristics as we developed the
+methods (chronologically) and hence most of the heuristics could potentially be
+used on all three methods and not only the methods on which they were used. In
+case the methods are working succesfully, they could furthermore be combined to
+generate ie. fully atomic timestepping (both time and spatial adaptive).
 
 \subsection{Adapt-on-switch}
 \label{sec:method_switch}
@@ -287,17 +293,20 @@ all vertices, but only re-calculate acceleration and velocity of the springs
 and points that fulfill some defined heuristics and hence the method is called
 ``Atomic Updating using Heuristics'' (AUH).
 
-The heuristics can be chosen to fit the domain of the simulation, but we
-have chosen to use the number of steps since last update, $n_{last}$, and
-the ratio between the current spring length and the spring length at the
-last update $r_{last}$. This should force a bound on the maximal timestep
-before update as well as making sure updates are done more frequently in case
-the springlength is changing more rapidly. Further details are explained in
-section \ref{sec:experiments}.
+The heuristics can be chosen to fit the domain of the simulation, but we have
+chosen to use the number of steps since last update, $n_{last}$, and the ratio
+between the current spring length and the spring length at the last update
+$r_{last}$. This should force a bound on the maximal number of timesteps
+before update as well as force frequent updates when the spring is affected by a
+high acceleration in opposite direction of the current velocity/direction of
+change. \todo{Explain length ratio thought}. Further details are explained in
+section \ref{sec:experiments_atomic}.
 
-\subsection{Global estimated acceleration}
+\subsection{Global Estimated Acceleration}
 The third and last LAOT method we propose is time-adaptive. The simulations are
-done using an initial timestep size. We know that the force and hence
+done using an initial timestep size and define the timestep of each iteration
+based on a heuristic using the acceleration of the springs, and hence we call
+the method Global Estimated Acceleration (GEA). We know that the force and hence
 acceleration of a spring is somewhat linear close to the spring's rest length
 and it ``bends'' off as the spring is streched or contracted further away from
 the rest length. Based on this knowledge we will try to make a heuristic
@@ -309,6 +318,7 @@ For this simple 1D example we use the inverse of the acceleration
 for adapting the timestep and hence the heuristic is defined as:
 \begin{align}
     \frac{1}{a} &= \frac{1}{\frac{-kx}{m}} = \frac{m}{-kx} \\
+    \label{eq:inverse}
     \Delta t &= \text{min}\left( \frac{1}{\abs{a} + 0.1} \right )
 \end{align}
 We have added a small value (0.1) in order to avoid the timestep to increase
@@ -316,40 +326,44 @@ exponentially towards infinity as $\abs{a}$ approach 0. Furthermore a scaling
 of the timestep could be needed depending on the scale of the simulation mesh.
 Further details are explained in section \ref{sec:experiments}.
 
-Our though is that for some more
+Our though is that for more
 complex simulations we are able to make estimates of this type less costly than
 performing the actual simulations of a small fixed size timestep.
 
 %------------------------------------------------
 
-\section{Experiments and results}
+\section{Experiments, results and discussion}
 \label{sec:experiments}
 
-We first give an example of the actual application of LAOTS using the standard
-simulation of mass spring particles. Figure \ref{fig:std} shows two simulations
-of the same set of particles distributed with two different scales simulated for
-500 seconds each. All the springs $s \in S$ are initiated in a stretched state/position
-with a length 1.25 times longer than the rest length, damping and stiffness
-constants $C_s = 0.5, K_s = 0.5$, and all vertices $v \in V$
-have a mass of $m_v = 30$.
-\ref{fig:std_multi_30fps} shows a simulation using 30 fps and Figure
-\ref{fig:std_multi_1fps} shows a simulation using 1 fps. We clearly see that
-using a timestep of 30 fps the simulation is stable and able to handle the
-compression of all the small springs around $t = 110$ whereas a switch occurs
-when simulating at 1 fps. This switch causes ripples of sideeffects for the
-rest of the simulation and hence the final result is incorrect. No switches of
-the longer springs are however occuring and hence these pose no problem at 1
-fps. We will use this simulation for testing all three LAOTS methods proposed
-in section \ref{sec:methods}.
+We first give an example of the actual application of LAOT using the
+standard simulation of mass spring particles. Figure \ref{fig:std} shows two
+simulations of the same set of particles distributed with two different scales
+simulated for 250 seconds each. All the springs $s \in S$ are initiated in a
+stretched state/position with a length 1.25 times longer than the rest length,
+damping and stiffness constants $C_s = 0.5, K_s = 0.5$, and all vertices $v
+\in V$ have a mass of $m_v = 30$. Given this initial state all springs should
+start constracting since they are in a stretched position and eventually
+somewhere further in time stabilize at the rest position since we have added
+the damping force to the system.
+
+\ref{fig:std_multi_30fps} shows a simulation of the system described above
+using 30 fps and Figure \ref{fig:std_multi_1fps} shows the simulation using 1
+fps. We clearly see that using a timestep of 30 fps the simulation is stable
+and able to handle the compression of all the small springs around $t = 110$
+whereas a switch occurs when simulating at 1 fps. This switch causes ripples
+of sideeffects for the rest of the simulation and hence the final result is
+incorrect. No switches of the longer springs are however occuring and hence
+these pose no problem at 1 fps. We will use this simulation for testing all
+three LAOT methods proposed in section \ref{sec:methods}.
 
 \begin{figure}[H]
-    \begin{subfigure}{0.5\textwidth}
-        \includegraphics[width=\textwidth]{../images/standard_multiscale_30fps.png}
+    \begin{subfigure}[t]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/standard_multiscale_30fps.pdf}
         \caption{30 fps}
         \label{fig:std_multi_30fps}
     \end{subfigure}
-    \begin{subfigure}{0.5\textwidth}
-        \includegraphics[width=\textwidth]{../images/standard_multiscale_1fps.png}
+    \begin{subfigure}[t]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/standard_multiscale_1fps.pdf}
         \caption{1 fps}
         \label{fig:std_multi_1fps}
     \end{subfigure}
@@ -358,15 +372,14 @@ in section \ref{sec:methods}.
     \label{fig:std}
 \end{figure}
 
-\todo{Write something about the explicit euler based on uniform example}
 %\begin{figure}[H]
-%    \begin{subfigure}{0.5\textwidth}
-%        \includegraphics[width=\textwidth]{../images/standard_uniform_30fps.png}
+%    \begin{subfigure}[t]{0.5\textwidth}
+%        \includegraphics[width=\textwidth]{../images/standard_uniform_30fps.pdf}
 %        \caption{30 fps}
 %        \label{fig:std_uni_30fps}
 %    \end{subfigure}
-%    \begin{subfigure}{0.5\textwidth}
-%        \includegraphics[width=\textwidth]{../images/standard_uniform_1fps.png}
+%    \begin{subfigure}[t]{0.5\textwidth}
+%        \includegraphics[width=\textwidth]{../images/standard_uniform_1fps.pdf}
 %        \caption{1 fps}
 %        \label{fig:std_uni_1fps}
 %    \end{subfigure}
@@ -420,13 +433,13 @@ in question to grow in order to avoid the switch. \todo{Maybe the section
 above should be moved to a discussion section.}
 
 \begin{figure}[H]
-    \begin{subfigure}{0.5\textwidth}
-        \includegraphics[width=\textwidth]{../images/switch_multiscale_1fps_relative.png}
+    \begin{subfigure}[t]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/switch_multiscale_1fps_relative.pdf}
         \caption{Relative timestepping ($\Delta t = \frac{\Delta t}{100}$)}
         \label{fig:switch_multi_1fps_relative}
     \end{subfigure}
-    \begin{subfigure}{0.5\textwidth}
-        \includegraphics[width=\textwidth]{../images/switch_multiscale_1fps_absolute.png}
+    \begin{subfigure}[t]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/switch_multiscale_1fps_absolute.pdf}
         \caption{Absolute timestepping ($\Delta t = \frac{1}{30}$)}
         \label{fig:switch_multi_1fps_absolute}
     \end{subfigure}
@@ -437,6 +450,7 @@ switch in the following iteration.}
 \end{figure}
 
 \subsection{Atomic Updating using Heuristics}
+\label{sec:experiments_atomic}
 The AUH method concists of two heuristics for determining whether an element
 should be updated or not: steps since last update $l_{last}$, and the ratio
 between the spring length in last update and the current length $r_{last}$.
@@ -462,68 +476,160 @@ simulation at 10 fps but with 6.8 seconds between acceleration and velocity
 calculations. This is a result of combining the explicit Euler method with
 the AUH scheme since the scheme simply extrapolates the position at the last
 acceleration and velocity update to a position close in time to the next
-update position and then use this position when updating the acceleration and
+update position and then uses this position when updating the acceleration and
 velocity again. Had we chosen an alternative time integration method this
 advantage would most likely have been eliminated and let us perform the larger
 timesteps with the standard simulation.
 
 We now turn our attention towards the second heuristic.
-\todo{Decide on the exact heuristic to display after having talked to Sune.}
 
 \begin{figure}[H]
-    \begin{subfigure}{0.3\textwidth}
-        \includegraphics[width=\textwidth]{../images/atomic_multiscale_10fps_10sbound.png}
-        \caption{$l_{last} = 10$}
+    \begin{subfigure}[t]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/atomic_multiscale_10fps_10sbound.pdf}
+        \caption{$l_{last} = 10$, $r_{last}$ ignored}
         \label{fig:atomic_multi_10sbound}
     \end{subfigure}
-    \begin{subfigure}{0.3\textwidth}
-        \includegraphics[width=\textwidth]{../images/atomic_multiscale_10fps_68sbound.png}
-        \caption{$l_{last} = 68$}
+    \begin{subfigure}[t]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/atomic_multiscale_10fps_68sbound.pdf}
+        \caption{$l_{last} = 68$, $r_{last}$ ignored}
         \label{fig:atomic_multi_68sbound}
     \end{subfigure}
-    \begin{subfigure}{0.3\textwidth}
-        \includegraphics[width=\textwidth]{../images/atomic_multiscale_10fps_69sbound.png}
-        \caption{$l_{last} = 69$}
+    \begin{subfigure}[t]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/atomic_multiscale_10fps_69sbound.pdf}
+        \caption{$l_{last} = 69$, $r_{last}$ ignored}
         \label{fig:atomic_multi_69sbound}
     \end{subfigure}
+    \begin{subfigure}[t]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/atomic_multiscale_10fps_both.pdf}
+        \caption{$l_{last} = 10, r_{last} = 1.01$}
+        \label{fig:atomic_multi_both}
+    \end{subfigure}
     \caption{Simulations using the AUH method at 10 fps with various number of
-    steps since last update. Length heuristic is ignored (set to $\infty$).}
+    steps since last update.}
     \label{fig:atomic_multi_sbound}
 \end{figure}
 
-\begin{figure}[H]
-    \begin{subfigure}{0.5\textwidth}
-        \includegraphics[width=\textwidth]{../images/atomic_uniform_10fps_0.png}
+\begin{figure}
+    \begin{subfigure}[t]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/atomic_uniform_10fps_0.pdf}
         \caption{}
         \label{fig:atomic_uniform_10fps_0}
     \end{subfigure}
-    \begin{subfigure}{0.5\textwidth}
-        \includegraphics[width=\textwidth]{../images/atomic_uniform_10fps_1.png}
+    \begin{subfigure}[t]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/atomic_uniform_10fps_1.pdf}
         \caption{}
         \label{fig:atomic_uniform_10fps_1}
     \end{subfigure}
+    \caption{}
+    \label{fig:atomic_uniform}
 \end{figure}
 
 
 if ratio then too much dampening caused by lack of updates: Example: Simple with
 3 springs
 
-\subsection{Global estimated acceleration}
+\subsection{Global Estimated Acceleration}
+In the GEA method we perform adaption of the timestep according to equation
+\ref{eq:inverse}, and therefore we first wish to explore what this adaption
+means for a simple simulation before exploring the effect on the particle
+system used in the previous method experiments. We use the following
+constants: $d_s = 0.5$, $K_s = 0.3$, and $l_0,s$ is 1.25 times initial
+positions (2, 0, and -2). Furthermore given our simulation we define our
+timestep to $\Delta t_{GEA} = \Delta t^{0.8}\cdot \frac{1}{250}$ using the definition of
+$\Delta t$ in equation \ref{eq:inverse} in order to get steps of proper size.
+Figure \ref{fig:inverse_uniform_30fps_0} shows the resulting simulation
+displaying the position as a function of the time. The red lines show a standard
+simulation at 5 fps, the black lines show a standard simulation at 2.5 fps, and
+the blue lines show the GEA simulation. We observe that the three simulations a
+coinciding. Looking at figure \ref{fig:inverse_uniform_30fps_steps} we see the
+timestep sizes during the simulations displayed with the same colors as the
+simulation figure. We see that the GEA simulation varies it's timestep in
+between the two standard simulation timesteps and hence in this simulation the
+varying timestep isn't really beneficial as a standard simulation with lower fps
+is sufficient and hence less costly.
 
-The heuristic dampens the system
-\begin{figure}[H]
-    \begin{subfigure}{0.5\textwidth}
-        \includegraphics[width=\textwidth]{../images/inverse_uniform_10fps_0.png}
-        \caption{}
-        \label{fig:inverse_uniform_10fps_0}
+We now compare the GEA and standard simulation methods using the same simulation
+setup as we did when evaluating the previous methods. Here we have defined the varying
+timestep as $\Delta t_{GEA} = \Delta t^{0.8} \cdot \frac{1}{120}-0.038$ again
+using the definition of $\Delta t$ in equation \ref{eq:inverse}.
+Figure \ref{fig:inverse_multiscale} shows resulting plots of the timestep size
+as a function of the time of the simulation (figure
+\ref{fig:inverse_multiscale_steps}), and the accumulated number of timesteps as a
+function of the time of the simulation (figure
+\ref{fig:inverse_multiscale_cumstep}). The blue lines are the results for the GEA
+method and the red lines are the results for the standard method simulated at
+1.8 fps, which is the lowest fps at which no switches occur.
+Looking solely at the simulation-part of the previous methods (the first 250
+seconds) the GEA simulation used 455 steps while the standard simulation used 451 steps.
+If we however let the
+simulation run for a longer period of time, the GEA method surpasses the
+standard simulation. As we see in figure \ref{fig:inverse_multiscale_cumstep} the
+difference in accumulated number of timesteps rises as time passes and 20,000
+seconds into the simulation the standard simulation has used 36001 steps and GEA
+has used 30145 steps.
+This is caused by the damping of
+the system. As the acceleration of the springs decreases, the timesteps rise as can
+be seen in figure \ref{fig:inverse_uniform_30fps_steps} and
+\ref{fig:inverse_multiscale_steps}. By carefully scaling the
+timestep varying heuristic, the timestep adaption gains benefit over the
+standard simulation. The downside is however, that we first have to put an
+effort into scaling the heuristic to fit our simulation, but for the standard
+simulation we likewise have to experiment with the timestep size in order to
+find the threshold at which switches start occuring.
+
+Looking at the execution time the GEA method takes around 4.6 seconds and the
+standard simulation takes around 3.7 seconds to simulate 20,000 seconds at my
+personal laptop (2.53 GHz dualcore, 4GB memory) using my current Matlab 2013b
+implementation. This shows that the overhead of computing the heuristic and
+modifying the timestep for the GEA method in the current setup and simulation
+is more expensive than simply performing the standard simulation and hence we
+have gained no advantage. The execution time for the GEA method could however
+possibly be optimized and decreased using another programming language.
+Furthermore the advantage of the adapting is dependent of the simulation in
+question and hence further investigation of the possible use of the GEA method
+should be performed before a final conclusion can be made.
+
+Another heuristic which potentially could be used for the adaptive timestepping
+would be the acceleration (as opposed to the inverse of the acceleration in
+equation \ref{eq:inverse}). This could be done by having a basis timestep which
+is sufficient when the springs have a low acceleration. When the acceleration
+rises the timestep is decreased in stages instead of a direct one-to-one mapping
+depending on the order of magnitude of the acceleration.
+
+\begin{figure}
+    \begin{subfigure}[t]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/inverse_uniform_30fps.pdf}
+        \caption{Simulation using GEA (blue) and standard (red) simulation methods with
+        position as a function of the time of the simulation.}
+        \label{fig:inverse_uniform_30fps_0}
     \end{subfigure}
-    \begin{subfigure}{0.5\textwidth}
-        \includegraphics[width=\textwidth]{../images/inverse_uniform_10fps_1.png}
-        \caption{}
-        \label{fig:inverse_uniform_10fps_1}
+    \begin{subfigure}[t]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/inverse_uniform_30fps_steps.pdf}
+        \caption{Timestep size for GEA (blue) and standard (red) of the simulation in
+            \ref{fig:inverse_uniform_30fps_0}}
+        \label{fig:inverse_uniform_30fps_steps}
     \end{subfigure}
+    \caption{GEA compared with standard simulation on simple 3-vertex
+    mass-spring system}
+    \label{fig:inverse}
 \end{figure}
-
+\begin{figure}
+    \begin{subfigure}[t]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/inverse_multiscale_steps.pdf}
+        \caption{Timestep size for GEA (blue) and standard (red) as a function
+        of the time passed}
+        \label{fig:inverse_multiscale_steps}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{../images/inverse_multiscale_cumstep.pdf}
+        \caption{Accumulated number of steps taken as a function of the time passed for GEA
+        (blue) and standard (red)}
+        \label{fig:inverse_multiscale_cumstep}
+    \end{subfigure}
+    \caption{GEA compared with standard simulation on particles distributed with
+        two scales simulated for 20,000 seconds}
+    \label{fig:inverse_multiscale}
+\end{figure}
 
 %Examples of
 %
@@ -544,16 +650,25 @@ The heuristic dampens the system
 
 %------------------------------------------------
 
-\section{Discussion}
+\section{Future work}
 
-Adaptive timestepping based on highest acceleration/smallest grid
+Combine atomic approach with inverse acceleration heuristic
+
+Test methods with other integration schemes
+
+Test methods with hyperelastic materials
+
 Relate to hyperelastic materials (some linear heuristic = win)
+
+%------------------------------------------------
+
+\section{Conclusion}
+
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
 
-\section{Conclusion}
 
 \bibliography{bibliography}
 \bibliographystyle{plain}

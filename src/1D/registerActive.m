@@ -11,14 +11,18 @@ lUpdate, velocities, time, dt, factor, steps, stepBound, rest)
     l = abs(springLength(positionsFull, springs));
 
     % Ratio between last updated length and next
-    ratio = abs(l-rest);
-%    ratio2 = abs(l ./ lUpdate);
+%    ratio = abs(l-rest);
+    ratio2 = abs(l ./ lUpdate);
 
     % Find indices of violating springs and points
     sMask = zeros(size(l));
-    sMask = ratio > factor;
-%    sMask = ratio > factor | ratio <= 1/factor;
-%    sMask = ratio2 > factor | ratio2 <= 1/factor | sMask;
+%    sMask = ratio > factor;
+%    sMask = ratio2 > factor | ratio2 <= 1/factor;
+    if ~isnan(factor)
+        sMask = ratio2 < factor & ratio2 >= 1/factor | sMask;
+    end
+%    sMask = ratio2 < factor | sMask;
+%    sMask = ratio2 >= 1/factor & sMask;
     if ~isnan(stepBound)
         sMask = sMask | steps >= stepBound;
     end
