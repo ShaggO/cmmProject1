@@ -535,47 +535,46 @@ means for a simple simulation before exploring the effect on the particle
 system used in the previous method experiments. We use the following
 constants: $d_s = 0.5$, $K_s = 0.3$, and $l_0,s$ is 1.25 times initial
 positions (2, 0, and -2). Furthermore given our simulation we define our
-timestep to $\Delta t_{GEA} = \Delta t^{0.8}\cdot \frac{1}{250}$ using the definition of
-$\Delta t$ in equation \ref{eq:inverse} in order to get steps of proper size.
-Figure \ref{fig:inverse_uniform_30fps_0} shows the resulting simulation
-displaying the position as a function of the time. The red lines show a standard
-simulation at 5 fps, the black lines show a standard simulation at 2.5 fps, and
-the blue lines show the GEA simulation. We observe that the three simulations a
-coinciding. Looking at figure \ref{fig:inverse_uniform_30fps_steps} we see the
-timestep sizes during the simulations displayed with the same colors as the
-simulation figure. We see that the GEA simulation varies it's timestep in
-between the two standard simulation timesteps and hence in this simulation the
-varying timestep isn't really beneficial as a standard simulation with lower fps
-is sufficient and hence less costly.
+timestep to $\Delta t_{GEA} = \Delta t^{0.8}\cdot \frac{1}{250}$ using
+the definition of $\Delta t$ in equation \ref{eq:inverse} in order to get
+steps of proper size. Figure \ref{fig:inverse_uniform_30fps_0} shows the
+resulting simulation displaying the position as a function of the time.
+The red lines show a standard simulation at 5 fps, the black lines show a
+standard simulation at 2.5 fps, and the blue lines show the GEA simulation.
+We observe that the three simulations a coinciding. Looking at figure
+\ref{fig:inverse_uniform_30fps_steps} we see the timestep sizes during the
+simulations displayed with the same colors as the simulation figure. We see
+that the GEA simulation varies it's timestep in between the two standard
+simulation timesteps and hence in this simulation the varying timestep isn't
+really beneficial as a standard simulation with lower fps is sufficient and
+hence less costly.
 
-We now compare the GEA and standard simulation methods using the same simulation
-setup as we did when evaluating the previous methods. Here we have defined the varying
-timestep as $\Delta t_{GEA} = \Delta t^{0.8} \cdot \frac{1}{120}-0.038$ again
-using the definition of $\Delta t$ in equation \ref{eq:inverse}.
-Figure \ref{fig:inverse_multiscale} shows resulting plots of the timestep size
-as a function of the time of the simulation (figure
-\ref{fig:inverse_multiscale_steps}), and the accumulated number of timesteps as a
-function of the time of the simulation (figure
-\ref{fig:inverse_multiscale_cumstep}). The blue lines are the results for the GEA
-method and the red lines are the results for the standard method simulated at
-1.8 fps, which is the lowest fps at which no switches occur.
+We now compare the GEA and standard simulation methods using the same
+simulation setup as we did when evaluating the previous methods. Here we
+have defined the varying timestep as $\Delta t_{GEA} = \Delta t^{0.8}
+\cdot \frac{1}{120}-0.038$ again using the definition of $\Delta t$ in
+equation \ref{eq:inverse}. Figure \ref{fig:inverse_multiscale} shows
+resulting plots of the timestep size as a function of the time of the
+simulation (figure \ref{fig:inverse_multiscale_steps}), and the accumulated
+number of timesteps as a function of the time of the simulation (figure
+\ref{fig:inverse_multiscale_cumstep}). The blue lines are the results for
+the GEA method and the red lines are the results for the standard method
+simulated at 1.8 fps, which is the lowest fps at which no switches occur.
 Looking solely at the simulation-part of the previous methods (the first 250
-seconds) the GEA simulation used 455 steps while the standard simulation used 451 steps.
-If we however let the
-simulation run for a longer period of time, the GEA method surpasses the
-standard simulation. As we see in figure \ref{fig:inverse_multiscale_cumstep} the
-difference in accumulated number of timesteps rises as time passes and 20,000
-seconds into the simulation the standard simulation has used 36001 steps and GEA
-has used 30145 steps.
-This is caused by the damping of
-the system. As the acceleration of the springs decreases, the timesteps rise as can
-be seen in figure \ref{fig:inverse_uniform_30fps_steps} and
-\ref{fig:inverse_multiscale_steps}. By carefully scaling the
-timestep varying heuristic, the timestep adaption gains benefit over the
-standard simulation. The downside is however, that we first have to put an
-effort into scaling the heuristic to fit our simulation, but for the standard
-simulation we likewise have to experiment with the timestep size in order to
-find the threshold at which switches start occuring.
+seconds) the GEA simulation used 455 steps while the standard simulation
+used 451 steps. If we however let the simulation run for a longer period
+of time, the GEA method surpasses the standard simulation. As we see in
+figure \ref{fig:inverse_multiscale_cumstep} the difference in accumulated
+number of timesteps rises as time passes and 20,000 seconds into the
+simulation the standard simulation has used 36001 steps and GEA has used
+30145 steps. This is caused by the damping of the system. As the acceleration
+of the springs decreases, the timesteps rise as can be seen in figure
+\ref{fig:inverse_uniform_30fps_steps} and \ref{fig:inverse_multiscale_steps}.
+By carefully scaling the timestep varying heuristic, the timestep adaption
+gains benefit over the standard simulation. The downside is however, that we
+first have to put an effort into scaling the heuristic to fit our simulation,
+but for the standard simulation we likewise have to experiment with the
+timestep size in order to find the threshold at which switches start occuring.
 
 Looking at the execution time the GEA method takes around 4.6 seconds and the
 standard simulation takes around 3.7 seconds to simulate 20,000 seconds at my
@@ -589,12 +588,13 @@ Furthermore the advantage of the adapting is dependent of the simulation in
 question and hence further investigation of the possible use of the GEA method
 should be performed before a final conclusion can be made.
 
-Another heuristic which potentially could be used for the adaptive timestepping
-would be the acceleration (as opposed to the inverse of the acceleration in
-equation \ref{eq:inverse}). This could be done by having a basis timestep which
-is sufficient when the springs have a low acceleration. When the acceleration
-rises the timestep is decreased in stages instead of a direct one-to-one mapping
-depending on the order of magnitude of the acceleration.
+Another heuristic which potentially could be used for the adaptive
+timestepping would be the acceleration (as opposed to the inverse of the
+acceleration in equation \ref{eq:inverse}). This could be done by having a
+basis timestep which is sufficient when the springs have a low acceleration.
+When the acceleration rises the timestep is decreased in stages instead
+of a direct one-to-one mapping depending on the order of magnitude of the
+acceleration.
 
 \begin{figure}
     \begin{subfigure}[t]{0.5\textwidth}
@@ -658,12 +658,15 @@ Test methods with other integration schemes
 
 Test methods with hyperelastic materials
 
-Relate to hyperelastic materials (some linear heuristic = win)
+Alternative acceleration heuristic (steps in order of magnitude)
 
 %------------------------------------------------
 
 \section{Conclusion}
 
+The two first of our methods didn't work. The last of our methods worked
+(GEA). Further work should be put into optimizing it and testing with
+hyperelastic materials.
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
