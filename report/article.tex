@@ -208,7 +208,7 @@ Our 1D mass-spring system consists of a set $V$ of vertices and a set
 $S$ of springs. Each vertex $v \in V$ has a specified position $p_v$,
 mass $m_v$, force $F_v$ and velocity $u_v$, and each spring $s \in S$
 has two endpoints vertices $p_{f,s} \in V$ and $p_{t,s} \in V \setminus
-p_{f,s}$, a damping factor $d_s$, a stiffness constant $K_s$ and a rest length
+p_{f,s}$, a damping factor $C_s$, a stiffness constant $K_s$ and a rest length
 $l_{0,s}$. All these variables and constants combined describe the state
 of the mass-spring system at each time $t$ during a simulation. All these
 variables are initialized in step 1.
@@ -299,7 +299,7 @@ between the current spring length and the spring length at the last update
 $r_{last}$. This should force a bound on the maximal number of timesteps
 before update as well as force frequent updates when the spring is affected by a
 high acceleration in opposite direction of the current velocity/direction of
-change. \todo{Explain length ratio thought}. Further details are explained in
+change. \todo{Explain length ratio thought} Further details are explained in
 section \ref{sec:experiments_atomic}.
 
 \subsection{Global Estimated Acceleration}
