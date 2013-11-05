@@ -12,6 +12,10 @@
 \begin{document}
 \maketitle
 
+\section{Problem Statement}
+Study the application of locally adaptive timestepping in 1 dimensional
+simulation of a mass spring system.
+
 \section{Learning Goals}
 Course specific learning goals:
 \begin{enumerate}
@@ -25,17 +29,16 @@ Course specific learning goals:
 \end{enumerate}
 Project specific learning goals:
 \begin{enumerate}
-    \item Implement local adaptive optimization of timesteps (LAOT)
+    \item Implement local adaptive optimization of timesteps in a 1
+dimensional mass-spring system
+    \item Develop and implement possible heuristics for use in LAOT schemes
 	\item Evaluate LAOT to minimize the risk of unwanted deformations in grids
         and minimize the computational cost.
-    \item Discuss how LAOT is performed in practice using existing 2nd order optimization methods.
+    \item Discuss the use and combination of LAOT schemes and heuristics based
+        on the evaluation of these
 \end{enumerate}
 
 \section{Problem Description}
-
-\subsection{Problem Statement}
-Study the application of locally adaptive timestepping in 1 dimensional
-simulation of a mass spring system.
 
 \subsection{Motivation}
 When running a simulation of large hyperelastic materials we wish to make
@@ -49,11 +52,11 @@ we wish to accomodate in this paper by gaining insight into the area of LAOT in
 a simple 1 dimensional simulation (mass spring system).
 
 \subsection{Proposed solution}
-We wish to develop a method for locally adapting the timestep size in
-order to avoid curl ups/explosions while still maintaining the original
-timestep size of the rest of the simulation. In other words for each of
-the original timesteps we perform further simulations of problematic local
-areas of the grid with smaller timesteps.
+We wish to develop a method for locally adapting the timestep size (either
+spatial or in time) in
+order to avoid curl ups/explosions for minimizing the number of computations
+needed for a simulation. We do this by exploring possible methods and heuristics
+for LAOT application without affecting the outcome of a standard simulation.
 
 \subsection{Success criteria}
 To gain insight into the application of LAOT.
